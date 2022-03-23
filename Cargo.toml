@@ -3,20 +3,22 @@ name = "pancli"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-reqwest = { version = "0.11", features = ["blocking", "json"] }
-serde_json = "1.0"
-
-[workspace]
-members = [
-    "libs/qrcode",
-    "libs/aliyundrive"
-]
-
 [package.metadata.winres]
 LegalCopyright = "Copyright © 2020"
 # this FileDescription overrides package.description
 FileDescription = "pancli"
 email = "verticle@foxmail.com"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+serde_json = "1.0"
+qrcode_term = {path = "libs/qrcode_term"}
+
+[workspace]
+members = [
+    "libs/qrcode_term",
+    "libs/aliyundrive"
+]
+
