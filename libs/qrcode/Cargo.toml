@@ -6,16 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 # image future versions are not supported
 [dependencies]
-image = { version = "0.23", default-features = false, optional = true }
+image = { version = "0.23", optional = true }
 checked_int_cast = "1"
 
-[dev-dependencies]
-image = "0.23"
-
 [features]
-default = ["image", "svg"]
+default = ["image", "svg", "png"]
 bench = []
 svg = []
+png = []
 
 [[example]]
 name = "qrcode"

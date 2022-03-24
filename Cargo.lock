@@ -816,7 +816,6 @@ name = "qrcode_term"
 version = "0.1.0"
 dependencies = [
  "crossterm",
- "image",
  "qrcode",
 ]
 
