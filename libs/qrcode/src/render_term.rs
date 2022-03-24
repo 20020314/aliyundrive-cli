@@ -3,15 +3,15 @@
 use std::io::{self, Result as IoResult, Write};
 
 use crossterm::style::Stylize;
-pub use qrcode::types::Color::{self, Dark as QrDark, Light as QrLight};
+pub use crate::types::Color::{self, Dark as QrDark, Light as QrLight};
 
 use crate::matrix::Matrix;
 
 /// QR barcode terminal renderer intended for terminals.
 #[derive(Debug, Default)]
-pub struct Renderer {}
+pub struct RendererTerminal {}
 
-impl Renderer {
+impl RendererTerminal {
     /// Print a matrix describing a 2D barcode to the given writer.
     pub fn render<W: Write>(&self, matrix: &Matrix<Color>, target: &mut W) -> IoResult<()> {
         let width = matrix.size();
@@ -160,7 +160,7 @@ mod tests {
     fn helper_width_and_height(pixels: Vec<Color>, expected_width: usize, expected_height: usize) {
         // Given: a matrix, and a renderer for that matrix.
         let matrix = Matrix::new(pixels);
-        let renderer = Renderer::default();
+        let renderer = RendererTerminal::default();
         let mut writer = size_tracker::SizeTracker::new();
 
         // When: rendering the matrix

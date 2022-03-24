@@ -52,5 +52,4 @@ fn main() {
         .build();
     println!("{}", image);
 
-    qrcode::qr_image("data", "/tmp/qrcode.png");
 }

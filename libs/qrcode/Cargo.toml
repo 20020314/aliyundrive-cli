@@ -6,8 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 # image future versions are not supported
 [dependencies]
+crossterm = { version = "0.23", default-features = false }
 image = { version = "0.23", optional = true }
 checked_int_cast = "1"
+regex = "1.5.5"
 
 [features]
 default = ["image", "svg", "png"]

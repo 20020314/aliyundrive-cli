@@ -58,7 +58,7 @@ impl<T> Matrix<T> {
 
 #[cfg(test)]
 mod tests {
-    use qrcode::types::Color::{Dark as QrDark, Light as QrLight};
+    use crate::types::Color::{Dark as QrDark, Light as QrLight};
 
     use super::*;
 

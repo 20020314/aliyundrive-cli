@@ -1,55 +1,25 @@
-//! QRCode encoder
-//!
-//! This crate provides a QR code and Micro QR code encoder for binary data.
-//!
-#![cfg_attr(feature = "image", doc = "```rust")]
-#![cfg_attr(not(feature = "image"), doc = "```ignore")]
-//! use qrcode::QrCode;
-//! use image::Luma;
-//!
-//! // Encode some data into bits.
-//! let code = QrCode::new(b"01234567").unwrap();
-//!
-//! // Render the bits into an image.
-//! let image = code.render::<Luma<u8>>().build();
-//!
-//! // Save the image.
-//! # if cfg!(unix) {
-//! image.save("/tmp/qrcode.png").unwrap();
-//! # }
-//!
-//! // You can also render it into a string.
-//! let string = code.render()
-//!     .light_color(' ')
-//!     .dark_color('#')
-//!     .build();
-//! println!("{}", string);
-//! ```
-
-#![cfg_attr(feature = "bench", feature(test, external_doc))] // Unstable libraries
-#![deny(warnings, clippy::pedantic)]
-#![allow(
-    clippy::must_use_candidate, // This is just annoying.
-    clippy::use_self, // Rust 1.33 doesn't support Self::EnumVariant, let's try again in 1.37.
-)]
-#![cfg_attr(feature = "bench", doc(include = "../README.md"))]
-// ^ make sure we can test our README.md.
 
 use std::ops::Index;
 pub mod bits;
 pub mod canvas;
 mod cast;
 pub mod ec;
-pub mod optimize;
-pub mod render;
 pub mod types;
+pub mod matrix;
+pub(crate) mod util;
+pub mod render;
+pub(crate) mod optimize;
+pub mod render_term;
 
 pub use crate::types::{Color, EcLevel, QrResult, Version};
 
 use crate::cast::As;
-use crate::render::{Pixel, Renderer};
 use checked_int_cast::CheckedIntCast;
 use image::Luma;
+use matrix::Matrix;
+use render::{svg, Renderer, unicode, Pixel};
+use render_term::RendererTerminal;
+use types::QrError;
 
 /// The encoded QR code symbol.
 #[derive(Clone)]
@@ -281,11 +251,112 @@ impl Index<(usize, usize)> for QrCode {
     }
 }
 
+const QUIET_ZONE_WIDTH: usize = 2;
+
+/// Print the given `data` as QR code in the terminal.
+///
+/// Returns an error if generating the QR code failed.
+///
+/// # Examples
+///
+/// ```rust
+/// qrcode_term::qr_print("https://rust-lang.org/").unwrap();
+/// ```
+///
+/// # Panics
+///
+/// Panics if printing the QR code to the terminal failed.
+pub fn qr_print<D: AsRef<[u8]>>(data: D) -> Result<(), QrError> {
+    // Generate QR code pixel matrix
+    let mut matrix = Qr::from(data)?.to_matrix();
+    matrix.surround(QUIET_ZONE_WIDTH, render_term::QrLight);
+
+    // Render QR code to stdout
+    RendererTerminal::default().print_stdout(&matrix);
+    Ok(())
+}
+
+/// Generate `String` from the given `data` as QR code.
+///
+/// Returns an error if generating the QR code failed.
+///
+/// # Examples
+///
+/// ```rust
+/// let qr_string = qrcode_term::qr_string("https://rust-lang.org/").unwrap();
+/// print!("{}", qr_string);
+/// ```
+///
+/// # Panics
+///
+/// Panics if generating the QR code string failed.
+pub fn qr_string<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
+    // Generate QR code pixel matrix
+    let mut matrix = Qr::from(data)?.to_matrix();
+    matrix.surround(QUIET_ZONE_WIDTH, render_term::QrLight);
+
+    // Render QR code to a String
+    let mut buf = Vec::new();
+    RendererTerminal::default()
+        .render(&matrix, &mut buf)
+        .expect("failed to generate QR code string");
+    Ok(String::from_utf8(buf).unwrap())
+}
+
+/// Generate `String` from the given `data` as QR code.
+///
+/// Returns an error if generating the QR code failed.
+///
+/// # Examples
+///
+/// ```rust
+/// let u8_arr = qrcode_term::qr_bytes("https://rust-lang.org/").unwrap();
+/// print!("{}", u8_arr);
+/// ```
+///
+/// # Panics
+///
+/// Panics if generating the QR code string failed.
+pub fn qr_bytes<D: AsRef<[u8]>>(data: D) -> Result<Vec<u8>, QrError> {
+    let code = QrCode::new(data).unwrap();
+    // unicode string qrcode
+    let unicode_qrcode = code
+        .render::<unicode::Dense1x2>()
+        .dark_color(unicode::Dense1x2::Light)
+        .light_color(unicode::Dense1x2::Dark)
+        .build();
+    Ok(Vec::from(unicode_qrcode.as_bytes()))
+}
+
+/// Generate `String` from the given `data` as QR code.
+///
+/// Returns an error if generating the QR code failed.
+///
+/// # Examples
+///
+/// ```rust
+/// let svg_str = qrcode_term::qr_svg("https://rust-lang.org/").unwrap();
+/// print!("{}", svg_str);
+/// ```
+///
+/// # Panics
+///
+/// Panics if generating the QR code string failed.
+pub fn qr_svg<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
+    let code = QrCode::with_version(data, Version::Normal(5), EcLevel::M).unwrap();
+    let svg = code
+        .render()
+        .min_dimensions(200, 200)
+        .dark_color(svg::Color("#800000"))
+        .light_color(svg::Color("#ffff80"))
+        .build();
+    Ok(svg)
+}
+
 pub fn qr_image<D: AsRef<[u8]>>(data: D, path: &str) {
     // Image generation
     // Encode some data into bits.
     let code = QrCode::new(data).unwrap();
-
     // Render the bits into an image.
     let image = code.render::<Luma<u8>>().build();
 
@@ -293,9 +364,50 @@ pub fn qr_image<D: AsRef<[u8]>>(data: D, path: &str) {
     image.save(path).unwrap();
 }
 
+
+/// Raw QR code.
+#[allow(missing_debug_implementations)]
+pub struct Qr {
+    code: QrCode,
+}
+
+impl Qr {
+    /// Construct a new QR code.
+    pub fn from<D: AsRef<[u8]>>(data: D) -> Result<Self, QrError> {
+        Ok(Self {
+            // TODO: error handle here!
+            code: QrCode::new(data.as_ref())?,
+        })
+    }
+
+    /// Create pixel matrix from this QR code.
+    pub fn to_matrix(&self) -> Matrix<Color> {
+        Matrix::new(self.code.to_colors())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{EcLevel, QrCode, Version};
+
+    use super::*;
+
+    #[test]
+    fn test_api() {
+        // 终端打印二维码
+        // qr_print("https://github.com/zf1976/pancli").unwrap();
+
+        // 二维码字节数组
+        let qrcode_bytes = qr_bytes("https://github.com/zf1976/pancli").unwrap();
+        println!("{:?}", qrcode_bytes.as_slice());
+    }
+
+    /// Generating QR codes for text that is too large should fail.
+    #[test]
+    #[should_panic]
+    fn print_qr_too_long() {
+        Qr::from(&String::from_utf8(vec![b'a'; 8000]).unwrap()).unwrap();
+    }
 
     #[test]
     fn test_annex_i_qr() {
