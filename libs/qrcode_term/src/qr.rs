@@ -1,44 +1,39 @@
+//! QR code type.
 
-use crate::{render::unicode, types::QrError, QrCode};
+use qrcode::{types::Color, QrCode};
 
+use super::QrError;
+use crate::Matrix;
 
-pub fn print_qr<D: AsRef<[u8]>>(data: D) -> Result<(), QrError> {
-    let code = QrCode::new(data).unwrap();
-    // unicode string qrcode
-    let unicode_qrcode = generate_qr_unicode(code);
-    println!("{}", unicode_qrcode);
-    Ok(())
+/// Raw QR code.
+#[allow(missing_debug_implementations)]
+pub struct Qr {
+    code: QrCode,
 }
 
-pub fn generate_qr_bytes<D: AsRef<[u8]>>(data: D) -> Result<Vec<u8>, QrError> {
-    let code = QrCode::new(data).unwrap();
-    // unicode string qrcode
-    let unicode_qrcode = generate_qr_unicode(code);
-    Ok(Vec::from(unicode_qrcode.as_bytes()))
-}
+impl Qr {
+    /// Construct a new QR code.
+    pub fn from<D: AsRef<[u8]>>(data: D) -> Result<Self, QrError> {
+        Ok(Self {
+            // TODO: error handle here!
+            code: QrCode::new(data.as_ref())?,
+        })
+    }
 
-
-
-fn generate_qr_unicode(code: QrCode) -> String {
-    code.render::<unicode::Dense1x2>()
-        .dark_color(unicode::Dense1x2::Light)
-        .light_color(unicode::Dense1x2::Dark)
-        .build()
+    /// Create pixel matrix from this QR code.
+    pub fn to_matrix(&self) -> Matrix<Color> {
+        Matrix::new(self.code.to_colors())
+    }
 }
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
 
+    /// Generating QR codes for text that is too large should fail.
     #[test]
-    fn test_api() {
-        // 终端打印二维码
-        print_qr("https://github.com/zf1976/pancli").unwrap();
-
-        // 二维码字节数组
-        let qrcode_bytes = generate_qr_bytes("https://github.com/zf1976/pancli").unwrap();
-        println!("{:?}", qrcode_bytes.as_slice());
-
+    #[should_panic]
+    fn print_qr_too_long() {
+        Qr::from(&String::from_utf8(vec![b'a'; 8000]).unwrap()).unwrap();
     }
 }

@@ -1,0 +1,25 @@
+[package]
+name = "qrcode"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# image future versions are not supported
+[dependencies]
+image = { version = "0.23", default-features = false, optional = true }
+checked_int_cast = "1"
+
+[dev-dependencies]
+image = "0.23"
+
+[features]
+default = ["image", "svg"]
+bench = []
+svg = []
+
+[[example]]
+name = "qrcode"
+
+[lib]
+name = "qrcode"
+path = "src/lib.rs"

@@ -5,19 +5,15 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[badges]
-travis-ci = { repository = "kennytm/qrcode-rust" }
-coveralls = { repository = "kennytm/qrcode-rust" }
-is-it-maintained-issue-resolution = { repository = "kennytm/qrcode-rust" }
-is-it-maintained-open-issues = { repository = "kennytm/qrcode-rust" }
-maintenance = { status = "passively-maintained" }
-
 [dependencies]
-checked_int_cast = "1"
+crossterm = { version = "0.23", default-features = false }
+qrcode = { path = "../qrcode", default-features = true }
 
+[dev-dependencies]
+regex = "1"
 
 [[example]]
-name = "encode_string"
+name = "encode"
 
 [lib]
 name = "qrcode_term"
