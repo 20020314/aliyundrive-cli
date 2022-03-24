@@ -1,4 +1,3 @@
-use qrcode::QrCode;
 
 fn main() {
     // print qrcode
@@ -13,9 +12,9 @@ fn main() {
     println!("{:?}", u8_arr);
 
     // print qrcode svg String
-    let svg_str = qrcode_term::qr_svg("https://rust-lang.org/").unwrap();
-    println!("{:?}", svg_str);
+    let svg = qrcode_term::qr_svg("https://rust-lang.org/");
+    println!("{:?}", svg);
 
-    // image qrcode
-    qrcode::qr_image("https://rust-lang.org/", "/tmp/qrcode.png");
+    qrcode::qr_image("data", "/tmp/qrcode.png");
+   
 }

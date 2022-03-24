@@ -7,13 +7,13 @@ edition = "2021"
 
 [dependencies]
 crossterm = { version = "0.23", default-features = false }
-qrcode = { path = "../qrcode", default-features = true }
+qrcode = { path = "../qrcode", default-features = true}
 
 [dev-dependencies]
-regex = "1"
+image = "0.23"
 
 [[example]]
-name = "encode"
+name = "qrcode_term"
 
 [lib]
 name = "qrcode_term"
