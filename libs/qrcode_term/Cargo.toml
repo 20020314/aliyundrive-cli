@@ -15,6 +15,7 @@ maintenance = { status = "passively-maintained" }
 [dependencies]
 checked_int_cast = "1"
 
+
 [[example]]
 name = "encode_string"
 

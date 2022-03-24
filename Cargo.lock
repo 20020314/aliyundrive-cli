@@ -463,7 +463,6 @@ version = "0.1.0"
 dependencies = [
  "qrcode_term",
  "reqwest",
- "serde_json",
 ]
 
 [[package]]
