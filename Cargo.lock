@@ -742,6 +742,11 @@ dependencies = [
 [[package]]
 name = "panlib"
 version = "0.1.0"
+dependencies = [
+ "openssl",
+ "qrcode",
+ "reqwest",
+]
 
 [[package]]
 name = "parking_lot"
