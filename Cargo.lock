@@ -24,6 +24,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "aliyundrive-cli"
+version = "0.1.0"
+dependencies = [
+ "openssl",
+ "qrcode",
+ "reqwest",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -728,15 +737,6 @@ dependencies = [
  "openssl-src",
  "pkg-config",
  "vcpkg",
-]
-
-[[package]]
-name = "pancli"
-version = "0.1.0"
-dependencies = [
- "openssl",
- "qrcode",
- "reqwest",
 ]
 
 [[package]]
