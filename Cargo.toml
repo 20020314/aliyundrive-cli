@@ -14,11 +14,12 @@ email = "verticle@foxmail.com"
 [dependencies]
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 openssl = { version = "0.10", features = ["vendored"] }
-qrcode = {path = "libs/qrcode"}
+qrcode = { path = "libs/qrcode" }
+drive = { path = "libs/drive" }
 
 [workspace]
 members = [
     "libs/qrcode",
-    "libs/aliyundrive"
+    "libs/drive"
 ]
 
