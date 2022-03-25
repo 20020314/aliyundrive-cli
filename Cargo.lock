@@ -27,6 +27,10 @@ dependencies = [
 name = "aliyundrive-cli"
 version = "0.1.0"
 dependencies = [
+<<<<<<< HEAD
+=======
+ "drive",
+>>>>>>> a4edbb954439647b71d325e960789fc8731f4867
  "openssl",
  "qrcode",
  "reqwest",
@@ -201,6 +205,16 @@ checksum = "73770f8e1fe7d64df17ca66ad28994a0a623ea497fa69486e14984e715c5d174"
 dependencies = [
  "adler32",
  "byteorder",
+]
+
+[[package]]
+name = "drive"
+version = "0.1.0"
+dependencies = [
+ "openssl",
+ "qrcode",
+ "reqwest",
+ "serde",
 ]
 
 [[package]]
@@ -740,6 +754,7 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
 name = "panlib"
 version = "0.1.0"
 dependencies = [
@@ -749,6 +764,8 @@ dependencies = [
 ]
 
 [[package]]
+=======
+>>>>>>> a4edbb954439647b71d325e960789fc8731f4867
 name = "parking_lot"
 version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -987,6 +1004,20 @@ name = "serde"
 version = "1.0.136"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce31e24b01e1e524df96f1c2fdd054405f8d7376249a5110886fb4b658484789"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.136"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08597e7152fcd306f41838ed3e37be9eaeed2b61c42e2117266a554fab4662f9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "serde_json"
