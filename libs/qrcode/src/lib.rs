@@ -1,15 +1,14 @@
-
 use std::ops::Index;
 pub mod bits;
 pub mod canvas;
 mod cast;
 pub mod ec;
-pub mod types;
 pub mod matrix;
-pub(crate) mod util;
-pub mod render;
 pub(crate) mod optimize;
+pub mod render;
 pub mod render_term;
+pub mod types;
+pub(crate) mod util;
 
 pub use crate::types::{Color, EcLevel, QrResult, Version};
 
@@ -17,7 +16,7 @@ use crate::cast::As;
 use checked_int_cast::CheckedIntCast;
 use image::Luma;
 use matrix::Matrix;
-use render::{svg, Renderer, unicode, Pixel};
+use render::{svg, unicode, Pixel, Renderer};
 use render_term::RendererTerminal;
 use types::QrError;
 
@@ -363,7 +362,6 @@ pub fn qr_image<D: AsRef<[u8]>>(data: D, path: &str) {
     // Save the image.
     image.save(path).unwrap();
 }
-
 
 /// Raw QR code.
 #[allow(missing_debug_implementations)]

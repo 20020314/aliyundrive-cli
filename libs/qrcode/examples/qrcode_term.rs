@@ -1,4 +1,3 @@
-
 fn main() {
     // print qrcode
     qrcode::qr_print("https://rust-lang.org/").unwrap();
@@ -17,5 +16,4 @@ fn main() {
 
     // qrcode image write to /tmp/qrcode.png
     qrcode::qr_image("https://rust-lang.org/", "/tmp/qrcode.png");
-   
 }

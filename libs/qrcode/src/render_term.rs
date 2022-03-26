@@ -2,8 +2,8 @@
 
 use std::io::{self, Result as IoResult, Write};
 
-use crossterm::style::Stylize;
 pub use crate::types::Color::{self, Dark as QrDark, Light as QrLight};
+use crossterm::style::Stylize;
 
 use crate::matrix::Matrix;
 

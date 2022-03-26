@@ -1,11 +1,9 @@
+pub mod models;
+pub mod qr;
 
-
-pub(crate) mod models;
 #[cfg(test)]
 mod tests {
+
     #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
+    fn it_works() {}
 }

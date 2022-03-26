@@ -1,10 +1,10 @@
-use std::collections::HashMap;
+#[macro_use]
+extern crate log;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let resp =
-        reqwest::blocking::get("https://httpbin.org/ip")?.json::<HashMap<String, String>>()?;
-    println!("{:#?}", resp);
-    qrcode::qr_image("data", "/tmp/qrcode.png");
-    qrcode::qr_print("https://rust-lang.org/").unwrap();
-    Ok(())
+fn main() {
+    env_logger::init();
+
+    info!("starting up");
+
+    // ...
 }

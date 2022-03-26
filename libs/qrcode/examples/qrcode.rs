@@ -51,5 +51,4 @@ fn main() {
         .light_color(unicode::Dense1x2::Dark)
         .build();
     println!("{}", image);
-
 }
