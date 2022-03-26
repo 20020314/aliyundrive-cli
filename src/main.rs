@@ -1,10 +1,8 @@
-#[macro_use]
-extern crate log;
+use std::collections::HashMap;
 
-fn main() {
-    env_logger::init();
-
-    info!("starting up");
-
-    // ...
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let resp =
+        reqwest::blocking::get("https://httpbin.org/ip")?.json::<HashMap<String, String>>()?;
+    println!("{:#?}", resp);
+    Ok(())
 }
