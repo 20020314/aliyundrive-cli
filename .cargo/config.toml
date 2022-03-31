@@ -1,20 +1,22 @@
-# [source.crates-io]
-# replace-with = 'rsproxy'
-
-# [source.rsproxy]
-# registry = "https://rsproxy.cn/crates.io-index"
-
-# [registries.rsproxy]
-# index = "https://rsproxy.cn/crates.io-index"
-
-# [net]
-# git-fetch-with-cli = true
-
 [source.crates-io]
-registry = "https://github.com/rust-lang/crates.io-index"
-# 指定镜像
-replace-with = 'tuna'
+replace-with = 'rsproxy'
 
-# 清华大学
-[source.tuna]
-registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+[source.rsproxy]
+registry = "https://rsproxy.cn/crates.io-index"
+
+[registries.rsproxy]
+index = "https://rsproxy.cn/crates.io-index"
+
+[net]
+git-fetch-with-cli = true
+
+# rm -rf ~/.cargo/.package-cache
+
+# [source.crates-io]
+# registry = "https://github.com/rust-lang/crates.io-index"
+# # 指定镜像
+# replace-with = 'tuna'
+
+# # 清华大学
+# [source.tuna]
+# registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"

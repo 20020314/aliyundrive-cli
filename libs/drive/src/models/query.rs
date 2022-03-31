@@ -10,21 +10,23 @@ pub struct QueryQrCodeCkForm {
     pub code_content: String,
 }
 
+impl From<gen::GeneratorQrCodeResult> for QueryQrCodeCkForm {
+    fn from(gen: gen::GeneratorQrCodeResult) -> Self {
+        let data = gen.content.data;
+        QueryQrCodeCkForm {
+            t: data.t,
+            ck: data.ck,
+            code_content: data.code_content,
+        }
+    }
+}
+
 impl QueryQrCodeCkForm {
     pub fn new() -> Self {
         QueryQrCodeCkForm {
             t: 0,
             ck: String::from(""),
             code_content: String::from(""),
-        }
-    }
-
-    pub fn from(gen: gen::GeneratorQrCodeResult) -> Self {
-        let data = gen.content.data;
-        QueryQrCodeCkForm {
-            t: data.t,
-            ck: data.ck,
-            code_content: data.code_content,
         }
     }
 

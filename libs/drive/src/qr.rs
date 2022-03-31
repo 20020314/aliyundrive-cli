@@ -23,15 +23,15 @@ impl ToString for State {
 pub struct QrCodeScanner;
 
 impl QrCodeScanner {
-    pub fn get_generator_qrcode_content_result() -> Result<query::QueryQrCodeCkForm, reqwest::Error>
-    {
+    pub fn get_generator_qrcode_content_result(
+    ) -> Result<query::QueryQrCodeCkForm, Box<dyn std::error::Error>> {
         let resp = reqwest::blocking::get(GEN_API)?.json::<gen::GeneratorQrCodeResult>()?;
         Ok(query::QueryQrCodeCkForm::from(resp))
     }
 
     pub fn get_query_qrcode_result(
         from: &query::QueryQrCodeCkForm,
-    ) -> Result<query::QueryQrCodeResult, reqwest::Error> {
+    ) -> Result<query::QueryQrCodeResult, Box<dyn std::error::Error>> {
         let client = reqwest::blocking::Client::new();
         let resp = client
             .post(QUERY_API)
