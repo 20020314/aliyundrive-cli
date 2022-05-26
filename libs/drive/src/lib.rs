@@ -1,5 +1,7 @@
 pub mod models;
-pub mod qr;
+pub mod token;
+
+pub type Result<T> = anyhow::Result<T>;
 
 #[cfg(test)]
 mod tests {

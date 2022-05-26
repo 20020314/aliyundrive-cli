@@ -8,6 +8,7 @@ LegalCopyright = "Copyright © 2022"
 # this FileDescription overrides package.description
 FileDescription = "aliyundrive-cli"
 email = "verticle@foxmail.com"
+authors = "gngpp"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
