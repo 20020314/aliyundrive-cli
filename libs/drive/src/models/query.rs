@@ -8,6 +8,7 @@ pub struct QueryQrCodeResult {
     #[serde(default)]
     #[serde(rename = "content")]
     pub content: Option<QueryQrCodeContent>,
+
     #[serde(default)]
     #[serde(rename = "hasError")]
     pub has_error: bool,
@@ -38,11 +39,9 @@ pub struct QueryQrCodeContent {
     pub data: Option<QueryQrCodeContentData>,
 
     #[serde(default)]
-    #[serde(rename = "status")]
     pub status: i32,
 
     #[serde(default)]
-    #[serde(rename = "success")]
     pub success: bool,
 }
 
@@ -97,7 +96,7 @@ pub struct QueryQrCodeContentData {
 
     #[serde(default)]
     #[serde(rename = "smartlock")]
-    pub smart_lock: Option<String>,
+    pub smart_lock: bool,
 }
 
 impl QueryQrCodeContentData {
@@ -113,7 +112,7 @@ impl QueryQrCodeContentData {
             login_scene: None,
             result_code: 0,
             app_entrance: None,
-            smart_lock: None,
+            smart_lock: false,
         }
     }
 }
@@ -121,9 +120,9 @@ impl QueryQrCodeContentData {
 // query qrcode status form
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct QueryQrCodeCkForm {
-    pub t: i64,
-    pub ck: String,
-    pub code_content: String,
+    t: i64,
+    ck: String,
+    code_content: String,
 }
 
 impl QueryQrCodeCkForm {
@@ -134,6 +133,10 @@ impl QueryQrCodeCkForm {
             ck: String::new(),
             code_content: String::new(),
         }
+    }
+
+    pub fn get_content(&self) -> &str {
+        self.code_content.as_str()
     }
 
     pub fn to_map(&self) -> std::collections::HashMap<String, String> {
