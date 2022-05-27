@@ -1,3 +1,4 @@
+use crate::models::suc::TokenLoginResult;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -14,7 +15,7 @@ impl From<String> for Token {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct AuthorizationCode {
+pub struct AuthorizationCode {
     #[serde(rename = "token")]
     #[serde(default)]
     code: Option<String>,
@@ -22,4 +23,17 @@ struct AuthorizationCode {
     #[serde(rename = "loginType")]
     #[serde(default)]
     login_type: Option<String>,
+}
+
+impl From<TokenLoginResult> for AuthorizationCode {
+    fn from(from: TokenLoginResult) -> Self {
+        let code = from.get_authorization_code().unwrap_or_default();
+        if code.is_empty() {
+            log::info!("authorization code: {}", code)
+        }
+        Self {
+            code: Some(code),
+            login_type: None,
+        }
+    }
 }

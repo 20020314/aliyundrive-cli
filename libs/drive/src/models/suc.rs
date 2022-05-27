@@ -9,11 +9,13 @@ pub struct TokenLoginResult {
     goto: Option<String>,
 }
 
-impl TokenLoginResult {
-    pub fn new() -> Self {
-        Self { goto: None }
+impl From<String> for TokenLoginResult {
+    fn from(token: String) -> Self {
+        Self { goto: Some(token) }
     }
+}
 
+impl TokenLoginResult {
     pub fn get_authorization_code(&self) -> crate::Result<String> {
         if let Some(ref g) = self.goto {
             let url = Url::parse(g.as_str())?;

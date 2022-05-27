@@ -1,9 +1,11 @@
+use crate::models::auth::AuthorizationCode;
 use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
 use crate::models::suc::TokenLoginResult;
 use crate::models::*;
 use crate::token::QrCodeScanner;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
+use reqwest::cookie::Cookie;
 
 // generator qrcode
 const GENERATOR_QRCODE_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appEntrance=web&lang=zh_CN";
@@ -18,11 +20,34 @@ const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
 
 const SESSION_ID_KEY: &str = "SESSIONID";
 
-pub struct AliyunQrCodeScanner;
+pub struct AliyunQrCodeScanner {
+    session_id: String,
+}
 
 impl AliyunQrCodeScanner {
     pub fn new() -> Self {
-        Self {}
+        let session_id = match AliyunQrCodeScanner::init_session() {
+            Ok(session_id) => session_id,
+            Err(e) => {
+                panic!("{}", e)
+            }
+        };
+        Self { session_id }
+    }
+
+    // initialize session
+    pub fn init_session() -> crate::Result<String> {
+        let resp = reqwest::blocking::get(SESSION_ID_API)?;
+        if resp.status().is_success() {
+            for cookie in resp.cookies() {
+                if cookie.name() == SESSION_ID_KEY {
+                    return Ok(String::from(cookie.value()));
+                }
+            }
+            return Err(anyhow!("Failed to get session id."));
+        }
+        let error_handler_msg = ResponseHandler::response_error_msg_handler(resp);
+        Err(anyhow!(error_handler_msg))
     }
 }
 
@@ -38,25 +63,20 @@ impl QrCodeScanner for AliyunQrCodeScanner {
         ResponseHandler::response_handler::<QueryQrCodeResult>(resp)
     }
 
-    fn get_session_id(&self) -> crate::Result<String> {
-        let resp = reqwest::blocking::get(SESSION_ID_API)?;
-        if resp.status().is_success() {
-            for cookie in resp.cookies() {
-                if cookie.name() == SESSION_ID_KEY {
-                    return Ok(String::from(cookie.value()));
-                }
-            }
-            return Err(anyhow!("Failed to get session id!"));
-        }
-        let error_handler_msg = ResponseHandler::response_error_msg_handler(resp);
-        Err(anyhow!(error_handler_msg))
+    fn token_login(&self, token: auth::Token) -> crate::Result<TokenLoginResult> {
+        let client = reqwest::blocking::Client::new();
+        let resp = client
+            .post(TOKEN_LOGIN_API)
+            .header(
+                reqwest::header::COOKIE,
+                format!("SESSIONID={}", &self.session_id),
+            )
+            .json(&token)
+            .send()?;
+        ResponseHandler::response_handler::<TokenLoginResult>(resp)
     }
 
-    fn token_login(&self) -> crate::Result<TokenLoginResult> {
-        todo!()
-    }
-
-    fn get_token(&self) {
+    fn get_token(&self, auth: AuthorizationCode) {
         todo!()
     }
 }
