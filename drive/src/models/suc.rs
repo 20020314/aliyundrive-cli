@@ -8,9 +8,9 @@ pub struct GotoResult {
     goto: Option<String>,
 }
 
-impl From<String> for GotoResult {
-    fn from(token: String) -> Self {
-        Self { goto: Some(token) }
+impl<'a> From<&'a String> for GotoResult {
+    fn from(token: &String) -> Self {
+        Self { goto: Some(token.to_string()) }
     }
 }
 
@@ -24,7 +24,7 @@ impl GotoResult {
             let param = param.to_string();
             let k_v_array = param.split("=").collect::<Vec<&str>>();
             let key = k_v_array.get(0).ok_or(anyhow!("goto query param key is None"))?;
-            if *key == "code" {
+            if *key == crate::models::CODE_KEY {
                 let value = k_v_array.get(1).ok_or(anyhow!("goto query param value is None"))?;
                 return Ok(String::from(*value));
             }
@@ -124,7 +124,7 @@ pub struct PdsLoginResult {
     #[serde(default)]
     data_pin_setup: bool,
 
-    #[serde(rename = "DingDingRobotUrl")]
+    #[serde(rename = "state")]
     #[serde(default)]
     state: Option<String>,
 
@@ -140,7 +140,7 @@ pub struct PdsLoginResult {
     #[serde(default)]
     refresh_token: Option<String>,
 
-    #[serde(rename = "DingDingRobotUrl")]
+    #[serde(rename = "status")]
     #[serde(default)]
     status: Option<String>,
 }

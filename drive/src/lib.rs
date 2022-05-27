@@ -1,4 +1,4 @@
-pub mod login;
+pub mod scan;
 pub mod models;
 
 pub type Result<T> = anyhow::Result<T>;

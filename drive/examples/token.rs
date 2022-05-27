@@ -1,5 +1,5 @@
-use drive::login::qr::LoginQrCodeScanner;
-use drive::login::{QrCodeScanner, QrCodeScannerState};
+use drive::scan::qr::LoginQrCodeScanner;
+use drive::scan::{QrCodeScanner, QrCodeScannerState};
 use drive::models::query::QueryQrCodeCkForm;
 use drive::models::{suc, Ok};
 use std::ffi::OsString;

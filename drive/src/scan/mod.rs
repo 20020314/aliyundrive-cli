@@ -36,10 +36,10 @@ pub trait QrCodeScanner {
         from: &query::QueryQrCodeCkForm,
     ) -> crate::Result<query::QueryQrCodeResult>;
 
-    // login login result（include authorization code）
+    // scan scan result（include authorization code）
     fn token_login(&self, token: auth::Token) -> crate::Result<suc::GotoResult>;
 
-    // get web side login
+    // get web side scan
     fn get_token(&self, auth: auth::AuthorizationCode);
 }
 

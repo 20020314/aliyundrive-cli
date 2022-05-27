@@ -5,6 +5,11 @@ pub mod gen;
 pub mod query;
 pub mod suc;
 
+pub const CODE_KEY: &str = "code";
+pub const LOGIN_TYPE: &str = "normal";
+pub const CK_KEY: &str = "ck";
+pub const T_KEY: &str = "t";
+
 pub trait Ok {
     fn ok(&self) -> bool;
 }

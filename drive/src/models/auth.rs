@@ -16,7 +16,7 @@ impl<'a> From<&'a String> for Token {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AuthorizationCode {
-    #[serde(rename = "login")]
+    #[serde(rename = "code")]
     #[serde(default)]
     code: Option<String>,
 
@@ -25,15 +25,15 @@ pub struct AuthorizationCode {
     login_type: Option<String>,
 }
 
-impl From<GotoResult> for AuthorizationCode {
-    fn from(from: GotoResult) -> Self {
+impl<'a> From<&'a GotoResult> for AuthorizationCode {
+    fn from(from: &GotoResult) -> Self {
         let code = from.extract_authorization_code();
         match code {
             Ok(code) => {
                 log::debug!("authorization code: {}", &code);
                 return Self {
                     code: Some(code),
-                    login_type: Some(String::from("normal")),
+                    login_type: Some(crate::models::LOGIN_TYPE.to_string()),
                 };
             }
             Err(e) => {

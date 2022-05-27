@@ -1,9 +1,9 @@
 use super::gen;
-use crate::login::{QrCodeScannerState, State};
+use crate::scan::{QrCodeScannerState, State};
 use crate::models::{suc, Ok};
 use serde::{Deserialize, Serialize};
 
-// query qrcode login status
+// query qrcode scan status
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct QueryQrCodeResult {
     #[serde(default)]
@@ -192,8 +192,8 @@ impl QueryQrCodeCkForm {
 
     pub fn to_map(&self) -> std::collections::HashMap<String, String> {
         let mut params = std::collections::HashMap::<String, String>::new();
-        params.insert("t".to_string(), self.t.to_string());
-        params.insert("ck".to_string(), self.ck.to_string());
+        params.insert(crate::models::T_KEY.to_string(), self.t.to_string());
+        params.insert(crate::models::CK_KEY.to_string(), self.ck.to_string());
         params
     }
 }
