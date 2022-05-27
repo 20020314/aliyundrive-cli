@@ -1,6 +1,6 @@
 use super::gen;
-use crate::scan::{QrCodeScannerState, State};
 use crate::models::{suc, Ok};
+use crate::scan::{QrCodeScannerState, State};
 use serde::{Deserialize, Serialize};
 
 // query qrcode scan status

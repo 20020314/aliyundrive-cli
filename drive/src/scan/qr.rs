@@ -1,11 +1,10 @@
-use crate::scan::QrCodeScanner;
 use crate::models::auth::AuthorizationCode;
 use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
-use crate::models::suc::GotoResult;
+use crate::models::suc::{GotoResult, WebLoginResult};
 use crate::models::*;
+use crate::scan::QrCodeScanner;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
-use reqwest::cookie::Cookie;
 
 // generator qrcode
 const GENERATOR_QRCODE_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appEntrance=web&lang=zh_CN";
@@ -16,7 +15,7 @@ const SESSION_ID_API: &str = "https://auth.aliyundrive.com/v2/oauth/authorize?cl
 // scan scan result（include authorization code）
 const TOKEN_LOGIN_API: &str = "https://auth.aliyundrive.com/v2/oauth/token_login";
 // get web side scan
-const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/login/get";
+const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
 
 const SESSION_ID_KEY: &str = "SESSIONID";
 
@@ -71,14 +70,21 @@ impl QrCodeScanner for LoginQrCodeScanner {
                 reqwest::header::COOKIE,
                 format!("SESSIONID={}", &self.session_id),
             )
-            .header(reqwest::header::CONTENT_TYPE, "application/json")
             .json(&token)
             .send()?;
         ResponseHandler::response_handler::<GotoResult>(resp)
     }
 
-    fn get_token(&self, auth: AuthorizationCode) {
-        todo!()
+    fn get_token(&self, auth: AuthorizationCode) -> crate::Result<WebLoginResult> {
+        let client = reqwest::blocking::Client::new();
+        let resp = client.post(GET_WEB_TOKEN_API)
+            .header(
+                reqwest::header::COOKIE,
+                format!("SESSIONID={}", &self.session_id),
+            )
+            .json(&auth)
+            .send()?;
+        ResponseHandler::response_handler::<WebLoginResult>(resp)
     }
 }
 

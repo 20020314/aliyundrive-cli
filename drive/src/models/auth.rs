@@ -10,7 +10,9 @@ pub struct Token {
 
 impl<'a> From<&'a String> for Token {
     fn from(token: &String) -> Self {
-        Self { value: Some(token.to_string()) }
+        Self {
+            value: Some(token.to_string()),
+        }
     }
 }
 

@@ -1,5 +1,3 @@
-use base64::{CharacterSet, Config};
-use std::os::unix::prelude::OsStringExt;
 use std::string::String;
 
 fn main() {

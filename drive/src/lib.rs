@@ -1,5 +1,5 @@
-pub mod scan;
 pub mod models;
+pub mod scan;
 
 pub type Result<T> = anyhow::Result<T>;
 

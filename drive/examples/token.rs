@@ -1,11 +1,9 @@
+use drive::models::auth::{AuthorizationCode, Token};
+use drive::models::query::QueryQrCodeCkForm;
+use drive::models::{Ok, AuthenticationToken};
 use drive::scan::qr::LoginQrCodeScanner;
 use drive::scan::{QrCodeScanner, QrCodeScannerState};
-use drive::models::query::QueryQrCodeCkForm;
-use drive::models::{suc, Ok};
-use std::ffi::OsString;
-use std::os::unix::ffi::OsStringExt;
 use std::{thread, time};
-use drive::models::auth::Token;
 
 fn main() {
     let scanner = LoginQrCodeScanner::new();
@@ -22,14 +20,28 @@ fn main() {
             }
             if query_result.is_confirmed() {
                 let mobile_login_result = query_result.get_mobile_login_result().unwrap();
-                let access_token = mobile_login_result.get_access_token().unwrap();
+                println!("mobile_login_result: {:#?}", mobile_login_result);
+
+                let access_token = mobile_login_result.access_token().unwrap();
                 println!("mobile_login_result-access_token: {}\n", access_token);
-                let refresh_token = mobile_login_result.get_refresh_token().unwrap();
+
+                let refresh_token = mobile_login_result.refresh_token().unwrap();
                 println!("mobile_login_result-refresh_token: {}\n", refresh_token);
+
                 let goto_result = scanner.token_login(Token::from(&access_token)).unwrap();
+                println!("goto result: {:#?}\n", goto_result);
+
                 let authorization_code = goto_result.extract_authorization_code().unwrap();
                 println!("authorization_code: {}", authorization_code);
-                println!("goto result: {:?}\n", goto_result);
+
+                let web_login_result = scanner.get_token(AuthorizationCode::from(&goto_result)).unwrap();
+                println!("web_login_result: {:#?}", web_login_result);
+
+                let access_token = web_login_result.access_token().unwrap();
+                println!("web_login_result-access_token: {}\n", access_token);
+
+                let refresh_token = web_login_result.refresh_token().unwrap();
+                println!("web_login_result-refresh_token: {}\n", refresh_token);
             }
         }
         thread::sleep(time::Duration::from_secs(2));
