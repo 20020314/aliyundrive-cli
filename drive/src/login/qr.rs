@@ -59,7 +59,7 @@ impl QrCodeScanner for LoginQrCodeScanner {
 
     fn get_query_result(&self, from: &QueryQrCodeCkForm) -> crate::Result<QueryQrCodeResult> {
         let client = reqwest::blocking::Client::new();
-        let resp = client.post(QUERY_API).form(&from).send()?;
+        let resp = client.post(QUERY_API).form(&from.to_map()).send()?;
         ResponseHandler::response_handler::<QueryQrCodeResult>(resp)
     }
 
@@ -71,6 +71,7 @@ impl QrCodeScanner for LoginQrCodeScanner {
                 reqwest::header::COOKIE,
                 format!("SESSIONID={}", &self.session_id),
             )
+            .header(reqwest::header::CONTENT_TYPE, "application/json")
             .json(&token)
             .send()?;
         ResponseHandler::response_handler::<GotoResult>(resp)

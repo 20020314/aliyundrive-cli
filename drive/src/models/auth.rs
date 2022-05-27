@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Token {
-    #[serde(rename = "login")]
+    #[serde(rename = "token")]
     #[serde(default)]
     value: Option<String>,
 }
 
-impl From<String> for Token {
-    fn from(token: String) -> Self {
-        Self { value: Some(token) }
+impl<'a> From<&'a String> for Token {
+    fn from(token: &String) -> Self {
+        Self { value: Some(token.to_string()) }
     }
 }
 

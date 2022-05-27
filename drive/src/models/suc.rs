@@ -18,19 +18,15 @@ impl GotoResult {
     pub fn extract_authorization_code(&self) -> crate::Result<String> {
         let goto = self.goto.as_ref().ok_or(anyhow!("goto value is None"))?;
         let url = Url::parse(goto.as_str())?;
-        if let Some(query) = url.query() {
-            let query = query.to_string();
-            let param_array: Vec<_> = query.split("&").collect();
-            for param in param_array {
-                let param = param.to_string();
-                let k_v_array: Vec<_> = param.split("=").collect();
-                if let Some(key) = k_v_array.get(0) {
-                    if *key == "code" {
-                        if let Some(value) = k_v_array.get(1) {
-                            return Ok(String::from(*value));
-                        }
-                    }
-                }
+        let query = url.query().ok_or(anyhow!("goto query is None"))?;
+        let param_array = query.split("&").collect::<Vec<&str>>();
+        for param in param_array {
+            let param = param.to_string();
+            let k_v_array = param.split("=").collect::<Vec<&str>>();
+            let key = k_v_array.get(0).ok_or(anyhow!("goto query param key is None"))?;
+            if *key == "code" {
+                let value = k_v_array.get(1).ok_or(anyhow!("goto query param value is None"))?;
+                return Ok(String::from(*value));
             }
         }
         Err(anyhow!("get goto result error."))

@@ -1,6 +1,4 @@
 use base64::{CharacterSet, Config};
-use std::ffi::OsString;
-use std::mem;
 use std::os::unix::prelude::OsStringExt;
 use std::string::String;
 
