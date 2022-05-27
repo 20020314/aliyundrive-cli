@@ -25,12 +25,12 @@ impl TokenLoginResult {
                 for param in param_array {
                     let param = param.to_string();
                     let k_v_array: Vec<_> = param.split("=").collect();
-                    let key_option = k_v_array.get(0);
-                    let key = key_option.unwrap_or(&"");
-                    if *key == "code" {
-                        let value_option = k_v_array.get(1);
-                        let value = value_option.unwrap_or(&"");
-                        return Ok(String::from(*value));
+                    if let Some(key) = k_v_array.get(0) {
+                        if *key == "code" {
+                            if let Some(value) = k_v_array.get(1) {
+                                return Ok(String::from(*value));
+                            }
+                        }
                     }
                 }
             }
