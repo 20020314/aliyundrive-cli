@@ -2,7 +2,7 @@ use anyhow::anyhow;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-//  token login
+//  login login
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct TokenLoginResult {
     #[serde(default)]

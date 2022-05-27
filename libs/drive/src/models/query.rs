@@ -1,4 +1,5 @@
 use super::gen;
+use crate::login::{QrCodeScannerState, State};
 use crate::models::Ok;
 use serde::{Deserialize, Serialize};
 
@@ -7,11 +8,11 @@ use serde::{Deserialize, Serialize};
 pub struct QueryQrCodeResult {
     #[serde(default)]
     #[serde(rename = "content")]
-    pub content: Option<QueryQrCodeContent>,
+    content: Option<QueryQrCodeContent>,
 
     #[serde(default)]
     #[serde(rename = "hasError")]
-    pub has_error: bool,
+    has_error: bool,
 }
 
 impl QueryQrCodeResult {
@@ -21,6 +22,17 @@ impl QueryQrCodeResult {
             content: None,
             has_error: false,
         }
+    }
+
+    pub fn get_biz_ext(&self) -> Option<String> {
+        if let Some(ref content) = self.content {
+            if let Some(ref data) = content.data {
+                if let Some(ref biz_ext) = data.biz_ext {
+                    return Some(biz_ext.to_string());
+                }
+            }
+        }
+        None
     }
 }
 
@@ -33,16 +45,57 @@ impl Ok for QueryQrCodeResult {
     }
 }
 
+impl QrCodeScannerState for QueryQrCodeResult {
+    fn is_new(&self) -> bool {
+        if let Some(ref content) = self.content {
+            if let Some(ref data) = content.data {
+                if let Some(ref state) = data.qr_code_status {
+                    if State::NEW.eq(state) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    fn is_expired(&self) -> bool {
+        if let Some(ref content) = self.content {
+            if let Some(ref data) = content.data {
+                if let Some(ref state) = data.qr_code_status {
+                    if State::EXPIRED.eq(state) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+
+    fn is_confirmed(&self) -> bool {
+        if let Some(ref content) = self.content {
+            if let Some(ref data) = content.data {
+                if let Some(ref state) = data.qr_code_status {
+                    if State::CONFIRMED.eq(state) {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct QueryQrCodeContent {
     #[serde(rename = "data")]
-    pub data: Option<QueryQrCodeContentData>,
+    data: Option<QueryQrCodeContentData>,
 
     #[serde(default)]
-    pub status: i32,
+    status: i32,
 
     #[serde(default)]
-    pub success: bool,
+    success: bool,
 }
 
 impl QueryQrCodeContent {
@@ -56,47 +109,47 @@ impl QueryQrCodeContent {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, PartialEq)]
 pub struct QueryQrCodeContentData {
     #[serde(default)]
     #[serde(rename = "loginResult")]
-    pub login_result: Option<String>,
+    login_result: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "loginSucResultAction")]
-    pub login_suc_result_action: Option<String>,
+    login_suc_result_action: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "st")]
-    pub st: Option<String>,
+    st: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "qrCodeStatus")]
-    pub qr_code_status: Option<String>,
+    qr_code_status: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "loginType")]
-    pub login_type: Option<String>,
+    login_type: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "bizExt")]
-    pub biz_ext: Option<String>,
+    biz_ext: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "loginScene")]
-    pub login_scene: Option<String>,
+    login_scene: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "resultCode")]
-    pub result_code: i32,
+    result_code: i32,
 
     #[serde(default)]
     #[serde(rename = "appEntrance")]
-    pub app_entrance: Option<String>,
+    app_entrance: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "smartlock")]
-    pub smart_lock: bool,
+    smart_lock: bool,
 }
 
 impl QueryQrCodeContentData {
@@ -149,11 +202,11 @@ impl QueryQrCodeCkForm {
 
 impl From<gen::GeneratorQrCodeResult> for QueryQrCodeCkForm {
     fn from(gen: gen::GeneratorQrCodeResult) -> Self {
-        let data = gen.content.unwrap_or_default().data.unwrap_or_default();
+        let data = gen.get_tuple();
         QueryQrCodeCkForm {
-            t: data.t,
-            ck: data.ck.unwrap_or_default(),
-            code_content: data.code_content.unwrap_or_default(),
+            t: data.0,
+            ck: data.1,
+            code_content: data.2,
         }
     }
 }

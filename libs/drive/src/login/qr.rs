@@ -1,32 +1,32 @@
+use crate::login::QrCodeScanner;
 use crate::models::auth::AuthorizationCode;
 use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
 use crate::models::suc::TokenLoginResult;
 use crate::models::*;
-use crate::token::QrCodeScanner;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
 use reqwest::cookie::Cookie;
 
 // generator qrcode
 const GENERATOR_QRCODE_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appEntrance=web&lang=zh_CN";
-// query scanner result (include mobile token)
+// query scanner result (include mobile login)
 const QUERY_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/query.do?appName=aliyun_drive&fromSite=52&_bx-v=2.0.31";
 // get session id
 const SESSION_ID_API: &str = "https://auth.aliyundrive.com/v2/oauth/authorize?client_id=25dzX3vbYqktVxyX&redirect_uri=https%3A%2F%2Fwww.aliyundrive.com%2Fsign%2Fcallback&response_type=code&login_type=custom&state=%7B%22origin%22%3A%22https%3A%2F%2Fwww.aliyundrive.com%22%7D#/nestedlogin?keepLogin=false&hidePhoneCode=true&ad__pass__q__rememberLogin=true&ad__pass__q__rememberLoginDefaultValue=true&ad__pass__q__forgotPassword=true&ad__pass__q__licenseMargin=true&ad__pass__q__loginType=normal";
-// token login result（include authorization code）
+// login login result（include authorization code）
 const TOKEN_LOGIN_API: &str = "https://auth.aliyundrive.com/v2/oauth/token_login";
-// get web side token
-const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
+// get web side login
+const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/login/get";
 
 const SESSION_ID_KEY: &str = "SESSIONID";
 
-pub struct AliyunQrCodeScanner {
+pub struct LoginQrCodeScanner {
     session_id: String,
 }
 
-impl AliyunQrCodeScanner {
+impl LoginQrCodeScanner {
     pub fn new() -> Self {
-        let session_id = match AliyunQrCodeScanner::init_session() {
+        let session_id = match LoginQrCodeScanner::init_session() {
             Ok(session_id) => session_id,
             Err(e) => {
                 panic!("{}", e)
@@ -51,7 +51,7 @@ impl AliyunQrCodeScanner {
     }
 }
 
-impl QrCodeScanner for AliyunQrCodeScanner {
+impl QrCodeScanner for LoginQrCodeScanner {
     fn get_generator_result(&self) -> crate::Result<gen::GeneratorQrCodeResult> {
         let resp = reqwest::blocking::get(GENERATOR_QRCODE_API)?;
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp)

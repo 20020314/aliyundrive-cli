@@ -9,6 +9,13 @@ pub enum State {
     NEW,
 }
 
+impl State {
+    pub fn eq(&self, str: &String) -> bool {
+        let value = self.to_string();
+        return str.eq(&value);
+    }
+}
+
 impl ToString for State {
     fn to_string(&self) -> String {
         match self {
@@ -29,9 +36,17 @@ pub trait QrCodeScanner {
         from: &query::QueryQrCodeCkForm,
     ) -> crate::Result<query::QueryQrCodeResult>;
 
-    // token login result（include authorization code）
+    // login login result（include authorization code）
     fn token_login(&self, token: auth::Token) -> crate::Result<suc::TokenLoginResult>;
 
-    // get web side token
+    // get web side login
     fn get_token(&self, auth: auth::AuthorizationCode);
+}
+
+pub trait QrCodeScannerState {
+    fn is_new(&self) -> bool;
+
+    fn is_expired(&self) -> bool;
+
+    fn is_confirmed(&self) -> bool;
 }

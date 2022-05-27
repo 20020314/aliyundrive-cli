@@ -6,11 +6,11 @@ use serde::{Deserialize, Serialize};
 pub struct GeneratorQrCodeResult {
     #[serde(default)]
     #[serde(rename = "content")]
-    pub content: Option<GeneratorQrCodeContent>,
+    content: Option<GeneratorQrCodeContent>,
 
     #[serde(rename = "hasError")]
     #[serde(default)]
-    pub has_error: bool,
+    has_error: bool,
 }
 
 impl GeneratorQrCodeResult {
@@ -20,6 +20,23 @@ impl GeneratorQrCodeResult {
             content: None,
             has_error: false,
         }
+    }
+
+    pub fn get_tuple(&self) -> (i64, String, String) {
+        if let Some(ref content) = self.content {
+            if let Some(ref data) = content.data {
+                let ck = match &data.ck {
+                    None => String::new(),
+                    Some(ck) => ck.to_string(),
+                };
+                let code_content = match &data.code_content {
+                    None => String::new(),
+                    Some(code_content) => code_content.to_string(),
+                };
+                return (data.t, ck, code_content);
+            }
+        }
+        (0, String::new(), String::new())
     }
 }
 
@@ -36,15 +53,15 @@ impl Ok for GeneratorQrCodeResult {
 pub struct GeneratorQrCodeContent {
     #[serde(default)]
     #[serde(rename = "data")]
-    pub data: Option<GeneratorQrCodeContentData>,
+    data: Option<GeneratorQrCodeContentData>,
 
     #[serde(rename = "status")]
     #[serde(default)]
-    pub status: i32,
+    status: i32,
 
     #[serde(rename = "success")]
     #[serde(default)]
-    pub success: bool,
+    success: bool,
 }
 
 impl GeneratorQrCodeContent {
@@ -62,35 +79,35 @@ impl GeneratorQrCodeContent {
 pub struct GeneratorQrCodeContentData {
     #[serde(rename = "t")]
     #[serde(default)]
-    pub t: i64,
+    t: i64,
 
     #[serde(default)]
     #[serde(rename = "codeContent")]
-    pub code_content: Option<String>,
+    code_content: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "ck")]
-    pub ck: Option<String>,
+    ck: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "resultCode")]
-    pub result_code: i32,
+    result_code: i32,
 
     #[serde(default)]
     #[serde(rename = "titleMsg")]
-    pub title_msg: Option<String>,
+    title_msg: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "traceId")]
-    pub trace_id: Option<String>,
+    trace_id: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "errorCode")]
-    pub error_code: Option<String>,
+    error_code: Option<String>,
 
     #[serde(default)]
     #[serde(rename = "isMobile")]
-    pub is_mobile: bool,
+    is_mobile: bool,
 }
 
 impl GeneratorQrCodeContentData {

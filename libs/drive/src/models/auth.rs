@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Token {
-    #[serde(rename = "token")]
+    #[serde(rename = "login")]
     #[serde(default)]
     value: Option<String>,
 }
@@ -16,7 +16,7 @@ impl From<String> for Token {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AuthorizationCode {
-    #[serde(rename = "token")]
+    #[serde(rename = "login")]
     #[serde(default)]
     code: Option<String>,
 
