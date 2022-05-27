@@ -1,7 +1,7 @@
 use crate::login::QrCodeScanner;
 use crate::models::auth::AuthorizationCode;
 use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
-use crate::models::suc::TokenLoginResult;
+use crate::models::suc::GotoResult;
 use crate::models::*;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
@@ -63,7 +63,7 @@ impl QrCodeScanner for LoginQrCodeScanner {
         ResponseHandler::response_handler::<QueryQrCodeResult>(resp)
     }
 
-    fn token_login(&self, token: auth::Token) -> crate::Result<TokenLoginResult> {
+    fn token_login(&self, token: auth::Token) -> crate::Result<GotoResult> {
         let client = reqwest::blocking::Client::new();
         let resp = client
             .post(TOKEN_LOGIN_API)
@@ -73,7 +73,7 @@ impl QrCodeScanner for LoginQrCodeScanner {
             )
             .json(&token)
             .send()?;
-        ResponseHandler::response_handler::<TokenLoginResult>(resp)
+        ResponseHandler::response_handler::<GotoResult>(resp)
     }
 
     fn get_token(&self, auth: AuthorizationCode) {

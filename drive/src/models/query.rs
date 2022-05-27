@@ -1,6 +1,6 @@
 use super::gen;
 use crate::login::{QrCodeScannerState, State};
-use crate::models::Ok;
+use crate::models::{suc, Ok};
 use serde::{Deserialize, Serialize};
 
 // query qrcode login status
@@ -24,26 +24,25 @@ impl QueryQrCodeResult {
         }
     }
 
-    pub fn get_biz_ext(&self) -> Option<String> {
-        if let Some(ref content) = self.content {
-            if let Some(ref data) = content.data {
-                if let Some(ref biz_ext) = data.biz_ext {
-                    return Some(biz_ext.to_string());
-                }
-            }
-        }
-        None
+    pub fn get_mobile_login_result(&self) -> Option<suc::MobileLoginResult> {
+        let biz_ext = self.get_biz_ext()?;
+        let vec = base64::decode(biz_ext).unwrap();
+        let string = vec.iter().map(|&c| c as char).collect::<String>();
+        serde_json::from_str::<suc::MobileLoginResult>(string.as_str()).ok()
+    }
+
+    fn get_biz_ext(&self) -> Option<String> {
+        let content = self.content.as_ref()?;
+        let data = content.data.as_ref()?;
+        let biz_ext = data.biz_ext.as_ref()?;
+        Some(biz_ext.to_string())
     }
 
     fn get_status(&self) -> Option<String> {
-        if let Some(ref content) = self.content {
-            if let Some(ref data) = content.data {
-                if let Some(ref state) = data.qr_code_status {
-                    return Some(state.to_string());
-                }
-            }
-        }
-        None
+        let content = self.content.as_ref()?;
+        let data = content.data.as_ref()?;
+        let state = data.qr_code_status.as_ref()?;
+        Some(state.to_string())
     }
 }
 
@@ -199,7 +198,7 @@ impl QueryQrCodeCkForm {
     }
 }
 
-impl< 'a >  From<&'a gen::GeneratorQrCodeResult> for QueryQrCodeCkForm {
+impl<'a> From<&'a gen::GeneratorQrCodeResult> for QueryQrCodeCkForm {
     fn from(gen: &'a gen::GeneratorQrCodeResult) -> Self {
         let data = gen.get_tuple();
         QueryQrCodeCkForm {
