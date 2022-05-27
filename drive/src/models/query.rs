@@ -39,7 +39,7 @@ impl QueryQrCodeResult {
         if let Some(ref content) = self.content {
             if let Some(ref data) = content.data {
                 if let Some(ref state) = data.qr_code_status {
-                    return Some(state.to_string())
+                    return Some(state.to_string());
                 }
             }
         }

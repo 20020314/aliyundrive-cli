@@ -27,12 +27,16 @@ pub struct AuthorizationCode {
 
 impl From<TokenLoginResult> for AuthorizationCode {
     fn from(from: TokenLoginResult) -> Self {
-        let code = from.get_authorization_code().unwrap_or_default();
-        if code.is_empty() {
-            log::info!("authorization code: {}", code)
+        let code = from.get_authorization_code();
+        if let Ok(code) = code {
+            log::debug!("authorization code: {}", &code);
+            return Self {
+                code: Some(code),
+                login_type: Some(String::from("")),
+            };
         }
         Self {
-            code: Some(code),
+            code: None,
             login_type: None,
         }
     }
