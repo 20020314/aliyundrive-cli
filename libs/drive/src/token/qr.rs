@@ -1,9 +1,9 @@
+use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
+use crate::models::suc::TokenLoginResult;
 use crate::models::*;
 use crate::token::QrCodeScanner;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
-use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
-use crate::models::suc::TokenLoginResult;
 
 // generator qrcode
 const GENERATOR_QRCODE_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appEntrance=web&lang=zh_CN";
@@ -34,12 +34,9 @@ impl QrCodeScanner for AliyunQrCodeScanner {
 
     fn get_query_result(&self, from: &QueryQrCodeCkForm) -> crate::Result<QueryQrCodeResult> {
         let client = reqwest::blocking::Client::new();
-        let resp = client.post(QUERY_API)
-            .form(&from)
-            .send()?;
+        let resp = client.post(QUERY_API).form(&from).send()?;
         ResponseHandler::response_handler::<QueryQrCodeResult>(resp)
     }
-
 
     fn get_session_id(&self) -> crate::Result<String> {
         let resp = reqwest::blocking::get(SESSION_ID_API)?;
@@ -58,7 +55,6 @@ impl QrCodeScanner for AliyunQrCodeScanner {
     fn token_login(&self) -> crate::Result<TokenLoginResult> {
         todo!()
     }
-
 
     fn get_token(&self) {
         todo!()

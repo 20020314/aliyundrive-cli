@@ -1,7 +1,7 @@
 pub mod qr;
 
-use serde::Serialize;
 use crate::models::{gen, query, suc};
+use serde::Serialize;
 
 #[allow(dead_code)]
 pub enum State {

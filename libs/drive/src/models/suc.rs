@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use reqwest::Url;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 //  token login
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -10,11 +10,8 @@ pub struct TokenLoginResult {
 }
 
 impl TokenLoginResult {
-
-    pub fn new() -> Self{
-        Self{
-            goto: None
-        }
+    pub fn new() -> Self {
+        Self { goto: None }
     }
 
     pub fn get_authorization_code(&self) -> crate::Result<String> {

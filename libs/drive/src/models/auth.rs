@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Token {
@@ -9,9 +9,7 @@ pub struct Token {
 
 impl From<String> for Token {
     fn from(token: String) -> Self {
-        Self {
-            value: Some(token)
-        }
+        Self { value: Some(token) }
     }
 }
 
@@ -25,6 +23,3 @@ struct AuthorizationCode {
     #[serde(default)]
     login_type: Option<String>,
 }
-
-
-

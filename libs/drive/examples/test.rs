@@ -1,5 +1,5 @@
-use std::iter::Map;
 use reqwest::Url;
+use std::iter::Map;
 
 fn main() {
     let token = drive::models::auth::Token::from(String::from("sb"));

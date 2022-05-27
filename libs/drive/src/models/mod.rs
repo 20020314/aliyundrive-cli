@@ -1,9 +1,9 @@
 use std::fmt;
 
+pub mod auth;
 pub mod gen;
 pub mod query;
 pub mod suc;
-pub mod auth;
 
 pub trait Ok {
     fn ok(&self) -> bool;
