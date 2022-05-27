@@ -1,7 +1,7 @@
+use crate::models::AuthenticationToken;
 use anyhow::anyhow;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
-use crate::models::AuthenticationToken;
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct GotoResult {
@@ -46,7 +46,6 @@ pub struct MobileLoginResult {
 }
 
 impl AuthenticationToken for MobileLoginResult {
-
     fn access_token(&self) -> Option<String> {
         let pds_login_result = self.pds_login_result.as_ref()?;
         let access_token = pds_login_result.access_token.as_ref()?;

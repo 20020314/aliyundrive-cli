@@ -21,6 +21,7 @@ const SESSION_ID_KEY: &str = "SESSIONID";
 
 pub struct LoginQrCodeScanner {
     session_id: String,
+    client: reqwest::blocking::Client,
 }
 
 impl LoginQrCodeScanner {
@@ -31,7 +32,11 @@ impl LoginQrCodeScanner {
                 panic!("{}", e)
             }
         };
-        Self { session_id }
+        let client = reqwest::blocking::Client::builder()
+            .connect_timeout(2000)
+            .build()
+            .unwrap_or(reqwest::blocking::Client::new());
+        Self { session_id, client }
     }
 
     // initialize session
@@ -52,19 +57,17 @@ impl LoginQrCodeScanner {
 
 impl QrCodeScanner for LoginQrCodeScanner {
     fn get_generator_result(&self) -> crate::Result<gen::GeneratorQrCodeResult> {
-        let resp = reqwest::blocking::get(GENERATOR_QRCODE_API)?;
+        let resp = self.client.get(GENERATOR_QRCODE_API)?;
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp)
     }
 
     fn get_query_result(&self, from: &QueryQrCodeCkForm) -> crate::Result<QueryQrCodeResult> {
-        let client = reqwest::blocking::Client::new();
-        let resp = client.post(QUERY_API).form(&from.to_map()).send()?;
+        let resp = self.client.post(QUERY_API).form(&from.to_map()).send()?;
         ResponseHandler::response_handler::<QueryQrCodeResult>(resp)
     }
 
     fn token_login(&self, token: auth::Token) -> crate::Result<GotoResult> {
-        let client = reqwest::blocking::Client::new();
-        let resp = client
+        let resp = self.client
             .post(TOKEN_LOGIN_API)
             .header(
                 reqwest::header::COOKIE,
@@ -76,8 +79,8 @@ impl QrCodeScanner for LoginQrCodeScanner {
     }
 
     fn get_token(&self, auth: AuthorizationCode) -> crate::Result<WebLoginResult> {
-        let client = reqwest::blocking::Client::new();
-        let resp = client.post(GET_WEB_TOKEN_API)
+        let resp = self.client
+            .post(GET_WEB_TOKEN_API)
             .header(
                 reqwest::header::COOKIE,
                 format!("SESSIONID={}", &self.session_id),

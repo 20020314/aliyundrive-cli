@@ -11,7 +11,6 @@ pub const CK_KEY: &str = "ck";
 pub const T_KEY: &str = "t";
 
 pub trait AuthenticationToken {
-
     fn access_token(&self) -> Option<String>;
 
     fn refresh_token(&self) -> Option<String>;
