@@ -199,7 +199,7 @@ impl QueryQrCodeCkForm {
 }
 
 impl<'a> From<&'a gen::GeneratorQrCodeResult> for QueryQrCodeCkForm {
-    fn from(gen: &'a gen::GeneratorQrCodeResult) -> Self {
+    fn from(gen: &gen::GeneratorQrCodeResult) -> Self {
         let data = gen.get_tuple();
         QueryQrCodeCkForm {
             t: data.0,
