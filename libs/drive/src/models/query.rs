@@ -34,6 +34,17 @@ impl QueryQrCodeResult {
         }
         None
     }
+
+    fn get_status(&self) -> Option<String> {
+        if let Some(ref content) = self.content {
+            if let Some(ref data) = content.data {
+                if let Some(ref state) = data.qr_code_status {
+                    return Some(state.to_string())
+                }
+            }
+        }
+        None
+    }
 }
 
 impl Ok for QueryQrCodeResult {
@@ -47,39 +58,27 @@ impl Ok for QueryQrCodeResult {
 
 impl QrCodeScannerState for QueryQrCodeResult {
     fn is_new(&self) -> bool {
-        if let Some(ref content) = self.content {
-            if let Some(ref data) = content.data {
-                if let Some(ref state) = data.qr_code_status {
-                    if State::NEW.eq(state) {
-                        return true;
-                    }
-                }
+        if let Some(ref state) = self.get_status() {
+            if State::NEW.eq(state) {
+                return true;
             }
         }
         false
     }
 
     fn is_expired(&self) -> bool {
-        if let Some(ref content) = self.content {
-            if let Some(ref data) = content.data {
-                if let Some(ref state) = data.qr_code_status {
-                    if State::EXPIRED.eq(state) {
-                        return true;
-                    }
-                }
+        if let Some(ref state) = self.get_status() {
+            if State::EXPIRED.eq(state) {
+                return true;
             }
         }
         false
     }
 
     fn is_confirmed(&self) -> bool {
-        if let Some(ref content) = self.content {
-            if let Some(ref data) = content.data {
-                if let Some(ref state) = data.qr_code_status {
-                    if State::CONFIRMED.eq(state) {
-                        return true;
-                    }
-                }
+        if let Some(ref state) = self.get_status() {
+            if State::CONFIRMED.eq(state) {
+                return true;
             }
         }
         false
