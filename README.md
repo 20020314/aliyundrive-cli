@@ -7,5 +7,6 @@
 - Web端token适用[aliyundrive-webdav](https://github.com/messense/aliyundrive-webdav)、[aliyundrive-fuse](https://github.com/messense/aliyundrive-fuse)
 - 移动端token适用于[alist](https://github.com/Xhofe/alist)
 ```shell
- cargo run --color=always --example token --manifest-path ./drive/Cargo.toml   
+ $ git clone https://github.com/gngpp/aliyundrive-cli.git && cd aliyundrive-cli
+ $ cargo run --color=always --example token --manifest-path ./drive/Cargo.toml   
 ```
