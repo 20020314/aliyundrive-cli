@@ -13,14 +13,24 @@ authors = "gngpp"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-reqwest = { version = "0.11", features = ["blocking", "json"] }
-openssl = { version = "0.10", features = ["vendored"] }
+#reqwest = { version = "0.11", features = ["blocking", "json"] }
+#openssl = { version = "0.10", features = ["vendored"] }
+anyhow = "1.0"
+log = "0.4.0"
+env_logger = "0.8.4"
+clap = { version = "3.1.18", features = ["cargo"] }
+serde = "1.0.137"
+serde_yaml = "0.8.24"
+lazy_static = "1.4.0"
+
 qrcode = { path = "qrcode" }
 drive = { path = "drive" }
+conf = { path = "conf" }
 
 [workspace]
 members = [
     "qrcode",
-    "drive"
+    "drive",
+    "conf"
 ]
 
