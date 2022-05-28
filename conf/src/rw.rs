@@ -3,7 +3,7 @@ use serde::ser;
 pub trait RW<T1, T2>
 where
     T1: ser::Serialize,
-    T2: ser::Serialize
+    T2: ser::Serialize,
 {
     fn write(t: T1) -> serde_yaml::Result<()>;
 

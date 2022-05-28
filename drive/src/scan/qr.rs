@@ -18,6 +18,8 @@ const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
 
 const SESSION_ID_KEY: &str = "SESSIONID";
 
+const MAX_CONN_TIME_SECS: u8 = 10;
+
 pub struct LoginQrCodeScanner {
     session_id: String,
     client: reqwest::blocking::Client,
@@ -32,7 +34,7 @@ impl LoginQrCodeScanner {
             }
         };
         let client = reqwest::blocking::Client::builder()
-            .connect_timeout(time::Duration::from_secs(2))
+            .connect_timeout(time::Duration::from_secs(MAX_CONN_TIME_SECS as u64))
             .build()
             .unwrap_or(reqwest::blocking::Client::new());
         Self { session_id, client }
@@ -40,7 +42,10 @@ impl LoginQrCodeScanner {
 
     // initialize session
     pub fn init_session() -> anyhow::Result<String> {
-        let resp = reqwest::blocking::get(SESSION_ID_API)?;
+        let client = reqwest::blocking::Client::builder()
+            .connect_timeout(time::Duration::from_secs(MAX_CONN_TIME_SECS as u64))
+            .build()?;
+        let resp = client.get(SESSION_ID_API).send()?;
         if resp.status().is_success() {
             for cookie in resp.cookies() {
                 if cookie.name() == SESSION_ID_KEY {

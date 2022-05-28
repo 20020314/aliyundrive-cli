@@ -86,7 +86,10 @@ impl Context {
 impl RW<Config, AuthorizationToken> for Context {
     fn write(t: Config) -> serde_yaml::Result<()> {
         let p = CONFIG_FILE_PATH.expect("Initialize config file error");
-        let f = std::fs::File::options().write(true).open(p).expect("Failed to read configuration");
+        let f = std::fs::File::options()
+            .write(true)
+            .open(p)
+            .expect("Failed to read configuration");
         serde_yaml::to_writer(f, &t)
     }
 
@@ -98,13 +101,9 @@ impl RW<Config, AuthorizationToken> for Context {
 
     fn read_token(is_mobile: bool) -> serde_yaml::Result<AuthorizationToken> {
         let config_result = Context::read();
-        let config= match config_result {
-            Ok(config) => {
-                config
-            }
-            Err(e) => {
-                return Err(serde_yaml::Error::from(e))
-            }
+        let config = match config_result {
+            Ok(config) => config,
+            Err(e) => return Err(serde_yaml::Error::from(e)),
         };
         if is_mobile {
             if let Some(token) = config.mobile_authorization_token {

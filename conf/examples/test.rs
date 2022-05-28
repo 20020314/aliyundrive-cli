@@ -1,11 +1,11 @@
-use std::{thread, time};
-use conf::Context;
 use conf::rw::RW;
+use conf::Context;
 use drive::models::auth::{AuthorizationCode, Token};
-use drive::models::{AuthorizationToken, Ok};
 use drive::models::query::QueryQrCodeCkForm;
+use drive::models::{AuthorizationToken, Ok};
 use drive::scan::qr::LoginQrCodeScanner;
 use drive::scan::{QrCodeScanner, QrCodeScannerState};
+use std::{thread, time};
 
 fn main() {
     let scanner = LoginQrCodeScanner::new();
@@ -23,7 +23,9 @@ fn main() {
                 let mobile_login_result = query_result.get_mobile_login_result().unwrap();
                 let mobile_access_token = mobile_login_result.access_token().unwrap();
                 let mobile_refresh_token = mobile_login_result.refresh_token().unwrap();
-                let goto_result = scanner.token_login(Token::from(&mobile_access_token)).unwrap();
+                let goto_result = scanner
+                    .token_login(Token::from(&mobile_access_token))
+                    .unwrap();
                 let web_login_result = scanner
                     .get_token(AuthorizationCode::from(&goto_result))
                     .unwrap();
