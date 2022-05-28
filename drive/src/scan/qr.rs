@@ -1,7 +1,5 @@
-use crate::models::auth::AuthorizationCode;
-use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
-use crate::models::suc::{GotoResult, WebLoginResult};
-use crate::models::*;
+use crate::error::QrCodeScannerError;
+use crate::models::{auth, gen, query, suc};
 use crate::scan::QrCodeScanner;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
@@ -30,7 +28,7 @@ impl LoginQrCodeScanner {
         let session_id = match LoginQrCodeScanner::init_session() {
             Ok(session_id) => session_id,
             Err(e) => {
-                panic!("{}", e)
+                panic!("get session id error: {}", e)
             }
         };
         let client = reqwest::blocking::Client::builder()
@@ -41,7 +39,7 @@ impl LoginQrCodeScanner {
     }
 
     // initialize session
-    pub fn init_session() -> crate::Result<String> {
+    pub fn init_session() -> anyhow::Result<String> {
         let resp = reqwest::blocking::get(SESSION_ID_API)?;
         if resp.status().is_success() {
             for cookie in resp.cookies() {
@@ -57,17 +55,20 @@ impl LoginQrCodeScanner {
 }
 
 impl QrCodeScanner for LoginQrCodeScanner {
-    fn get_generator_result(&self) -> crate::Result<gen::GeneratorQrCodeResult> {
+    fn get_generator_result(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult> {
         let resp = self.client.get(GENERATOR_QRCODE_API).send()?;
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp)
     }
 
-    fn get_query_result(&self, from: &QueryQrCodeCkForm) -> crate::Result<QueryQrCodeResult> {
+    fn get_query_result(
+        &self,
+        from: &query::QueryQrCodeCkForm,
+    ) -> crate::ScanResult<query::QueryQrCodeResult> {
         let resp = self.client.post(QUERY_API).form(&from.to_map()).send()?;
-        ResponseHandler::response_handler::<QueryQrCodeResult>(resp)
+        ResponseHandler::response_handler::<query::QueryQrCodeResult>(resp)
     }
 
-    fn token_login(&self, token: auth::Token) -> crate::Result<GotoResult> {
+    fn token_login(&self, token: auth::Token) -> crate::ScanResult<suc::GotoResult> {
         let resp = self
             .client
             .post(TOKEN_LOGIN_API)
@@ -77,10 +78,10 @@ impl QrCodeScanner for LoginQrCodeScanner {
             )
             .json(&token)
             .send()?;
-        ResponseHandler::response_handler::<GotoResult>(resp)
+        ResponseHandler::response_handler::<suc::GotoResult>(resp)
     }
 
-    fn get_token(&self, auth: AuthorizationCode) -> crate::Result<WebLoginResult> {
+    fn get_token(&self, auth: auth::AuthorizationCode) -> crate::ScanResult<suc::WebLoginResult> {
         let resp = self
             .client
             .post(GET_WEB_TOKEN_API)
@@ -90,7 +91,7 @@ impl QrCodeScanner for LoginQrCodeScanner {
             )
             .json(&auth)
             .send()?;
-        ResponseHandler::response_handler::<WebLoginResult>(resp)
+        ResponseHandler::response_handler::<suc::WebLoginResult>(resp)
     }
 }
 
@@ -98,21 +99,21 @@ struct ResponseHandler;
 
 impl ResponseHandler {
     #[allow(dead_code)]
-    fn response_unit_handler(resp: Response) -> crate::Result<()> {
+    fn response_unit_handler(resp: Response) -> crate::ScanResult<()> {
         if resp.status().is_success() {
             return Ok(());
         }
         let error_handler_msg = ResponseHandler::response_error_msg_handler(resp);
-        Err(anyhow!(error_handler_msg))
+        Err(QrCodeScannerError::from(error_handler_msg))
     }
 
-    fn response_handler<T: serde::de::DeserializeOwned>(resp: Response) -> crate::Result<T> {
+    fn response_handler<T: serde::de::DeserializeOwned>(resp: Response) -> crate::ScanResult<T> {
         if resp.status().is_success() {
             let result = resp.json::<T>()?;
             return Ok(result);
         }
         let error_handler_msg = ResponseHandler::response_error_msg_handler(resp);
-        Err(anyhow!(error_handler_msg))
+        Err(QrCodeScannerError::from(error_handler_msg))
     }
 
     fn response_error_msg_handler(resp: Response) -> String {

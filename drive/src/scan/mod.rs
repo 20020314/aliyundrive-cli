@@ -28,19 +28,19 @@ impl ToString for State {
 
 pub trait QrCodeScanner {
     // get qrcode generator result contend.
-    fn get_generator_result(&self) -> crate::Result<gen::GeneratorQrCodeResult>;
+    fn get_generator_result(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult>;
 
     // query qrcode result
     fn get_query_result(
         &self,
         from: &query::QueryQrCodeCkForm,
-    ) -> crate::Result<query::QueryQrCodeResult>;
+    ) -> crate::ScanResult<query::QueryQrCodeResult>;
 
     // scan scan result（include authorization code）
-    fn token_login(&self, token: auth::Token) -> crate::Result<suc::GotoResult>;
+    fn token_login(&self, token: auth::Token) -> crate::ScanResult<suc::GotoResult>;
 
     // get web side scan
-    fn get_token(&self, auth: auth::AuthorizationCode) -> crate::Result<suc::WebLoginResult>;
+    fn get_token(&self, auth: auth::AuthorizationCode) -> crate::ScanResult<suc::WebLoginResult>;
 }
 
 pub trait QrCodeScannerState {

@@ -18,7 +18,7 @@ impl<'a> From<&'a String> for GotoResult {
 }
 
 impl GotoResult {
-    pub fn extract_authorization_code(&self) -> crate::Result<String> {
+    pub fn extract_authorization_code(&self) -> anyhow::Result<String> {
         let goto = self.goto.as_ref().ok_or(anyhow!("goto value is None"))?;
         let url = Url::parse(goto.as_str())?;
         let query = url.query().ok_or(anyhow!("goto query is None"))?;
@@ -36,7 +36,7 @@ impl GotoResult {
                 return Ok(String::from(*value));
             }
         }
-        Err(anyhow!("get goto result error."))
+        Err(anyhow!("Failed to get authorization code"))
     }
 }
 

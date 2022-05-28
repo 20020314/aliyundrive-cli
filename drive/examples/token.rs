@@ -9,9 +9,8 @@ fn main() {
     let scanner = LoginQrCodeScanner::new();
     let generator_result = scanner.get_generator_result().unwrap();
     let ck_form = QueryQrCodeCkForm::from(&generator_result);
-    println!("{:#?}", &ck_form);
     qrcode::qr_print(ck_form.get_content()).expect("print qrcode error.");
-
+    println!("{:#?}", &ck_form);
     loop {
         let query_result = scanner.get_query_result(&ck_form).unwrap();
         if query_result.ok() {
