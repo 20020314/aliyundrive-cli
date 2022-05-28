@@ -49,8 +49,8 @@ impl LoginQrCodeScanner {
             }
             return Err(anyhow!("Failed to get session id."));
         }
-        let error_handler_msg = ResponseHandler::response_error_msg_handler(resp);
-        Err(anyhow!(error_handler_msg))
+        let msg = ResponseHandler::response_error_msg_handler(resp);
+        Err(anyhow!(msg))
     }
 }
 
@@ -103,8 +103,8 @@ impl ResponseHandler {
         if resp.status().is_success() {
             return Ok(());
         }
-        let error_handler_msg = ResponseHandler::response_error_msg_handler(resp);
-        Err(QrCodeScannerError::from(error_handler_msg))
+        let msg = ResponseHandler::response_error_msg_handler(resp);
+        Err(QrCodeScannerError::from(msg))
     }
 
     fn response_handler<T: serde::de::DeserializeOwned>(resp: Response) -> crate::ScanResult<T> {
@@ -112,8 +112,8 @@ impl ResponseHandler {
             let result = resp.json::<T>()?;
             return Ok(result);
         }
-        let error_handler_msg = ResponseHandler::response_error_msg_handler(resp);
-        Err(QrCodeScannerError::from(error_handler_msg))
+        let msg = ResponseHandler::response_error_msg_handler(resp);
+        Err(QrCodeScannerError::from(msg))
     }
 
     fn response_error_msg_handler(resp: Response) -> String {
