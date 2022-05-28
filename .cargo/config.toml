@@ -12,11 +12,11 @@
 
 # rm -rf ~/.cargo/.package-cache
 
-# [source.crates-io]
-# registry = "https://github.com/rust-lang/crates.io-index"
-# # 指定镜像
-# replace-with = 'tuna'
+ [source.crates-io]
+ registry = "https://github.com/rust-lang/crates.io-index"
+ # 指定镜像
+ replace-with = 'tuna'
 
-# # 清华大学
-# [source.tuna]
-# registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+ # 清华大学
+ [source.tuna]
+ registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
