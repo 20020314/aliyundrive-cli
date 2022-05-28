@@ -1,4 +1,3 @@
-use std::time;
 use crate::models::auth::AuthorizationCode;
 use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
 use crate::models::suc::{GotoResult, WebLoginResult};
@@ -6,6 +5,7 @@ use crate::models::*;
 use crate::scan::QrCodeScanner;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
+use std::time;
 
 // generator qrcode
 const GENERATOR_QRCODE_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appEntrance=web&lang=zh_CN";
