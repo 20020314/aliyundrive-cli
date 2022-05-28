@@ -17,9 +17,6 @@ bench = []
 svg = []
 png = []
 
-[[example]]
-name = "qrcode"
-
 [lib]
 name = "qrcode"
 path = "src/lib.rs"
