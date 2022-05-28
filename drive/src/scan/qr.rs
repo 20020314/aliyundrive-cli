@@ -1,3 +1,4 @@
+use std::time;
 use crate::models::auth::AuthorizationCode;
 use crate::models::query::{QueryQrCodeCkForm, QueryQrCodeResult};
 use crate::models::suc::{GotoResult, WebLoginResult};
@@ -33,7 +34,7 @@ impl LoginQrCodeScanner {
             }
         };
         let client = reqwest::blocking::Client::builder()
-            .connect_timeout(2000)
+            .connect_timeout(time::Duration::from_secs(2))
             .build()
             .unwrap_or(reqwest::blocking::Client::new());
         Self { session_id, client }
@@ -57,7 +58,7 @@ impl LoginQrCodeScanner {
 
 impl QrCodeScanner for LoginQrCodeScanner {
     fn get_generator_result(&self) -> crate::Result<gen::GeneratorQrCodeResult> {
-        let resp = self.client.get(GENERATOR_QRCODE_API)?;
+        let resp = self.client.get(GENERATOR_QRCODE_API).send()?;
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp)
     }
 
@@ -67,7 +68,8 @@ impl QrCodeScanner for LoginQrCodeScanner {
     }
 
     fn token_login(&self, token: auth::Token) -> crate::Result<GotoResult> {
-        let resp = self.client
+        let resp = self
+            .client
             .post(TOKEN_LOGIN_API)
             .header(
                 reqwest::header::COOKIE,
@@ -79,7 +81,8 @@ impl QrCodeScanner for LoginQrCodeScanner {
     }
 
     fn get_token(&self, auth: AuthorizationCode) -> crate::Result<WebLoginResult> {
-        let resp = self.client
+        let resp = self
+            .client
             .post(GET_WEB_TOKEN_API)
             .header(
                 reqwest::header::COOKIE,

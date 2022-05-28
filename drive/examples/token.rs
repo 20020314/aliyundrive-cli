@@ -1,6 +1,6 @@
 use drive::models::auth::{AuthorizationCode, Token};
 use drive::models::query::QueryQrCodeCkForm;
-use drive::models::{AuthenticationToken, Ok};
+use drive::models::{AuthorizationToken, Ok};
 use drive::scan::qr::LoginQrCodeScanner;
 use drive::scan::{QrCodeScanner, QrCodeScannerState};
 use std::{thread, time};
