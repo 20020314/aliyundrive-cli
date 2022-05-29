@@ -233,8 +233,8 @@ impl QrCode {
     ///                     .build();
     /// ```
     ///
-    /// Note: the `image` crate itself also provides method to rotate the image,
-    /// or overlay a logo on top of the QR code.
+    /// // Note: the `image` crate itself also provides method to rotate the image,
+    /// // or overlay a logo on top of the QR code.
     pub fn render<P: Pixel>(&self) -> Renderer<P> {
         let quiet_zone = if self.version.is_micro() { 2 } else { 4 };
         Renderer::new(&self.content, self.width, quiet_zone)
