@@ -134,6 +134,10 @@ mod tests{
 
     #[test]
     fn read_write_test() {
+
+        let read_config = crate::Context::read().unwrap();
+        println!("{:?}", read_config);
+
         let p1 = AuthorizationToken::new(String::from("a1"), String::from("a2"));
         let p2 = AuthorizationToken::new(String::from("a3"), String::from("a4"));
         let config = Config::new(Some(p1), Some(p2));
