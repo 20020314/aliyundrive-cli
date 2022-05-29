@@ -23,8 +23,8 @@ use crate::types::Color as ModuleColor;
 pub struct Color<'a>(pub &'a str);
 
 impl<'a> Pixel for Color<'a> {
-    type Canvas = Canvas<'a>;
     type Image = String;
+    type Canvas = Canvas<'a>;
 
     fn default_color(color: ModuleColor) -> Self {
         Color(color.select("#000", "#fff"))

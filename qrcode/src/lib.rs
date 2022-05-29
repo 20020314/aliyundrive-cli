@@ -259,7 +259,7 @@ const QUIET_ZONE_WIDTH: usize = 2;
 /// # Examples
 ///
 /// ```rust
-/// qrcode_term::qr_print("https://rust-lang.org/").unwrap();
+/// qrcode::qr_print("https://rust-lang.org/").unwrap();
 /// ```
 ///
 /// # Panics
@@ -282,7 +282,7 @@ pub fn qr_print<D: AsRef<[u8]>>(data: D) -> Result<(), QrError> {
 /// # Examples
 ///
 /// ```rust
-/// let qr_string = qrcode_term::qr_string("https://rust-lang.org/").unwrap();
+/// let qr_string = qrcode::qr_string("https://rust-lang.org/").unwrap();
 /// print!("{}", qr_string);
 /// ```
 ///
@@ -309,7 +309,7 @@ pub fn qr_string<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
 /// # Examples
 ///
 /// ```rust
-/// let u8_arr = qrcode_term::qr_bytes("https://rust-lang.org/").unwrap();
+/// let u8_arr = qrcode::qr_bytes("https://rust-lang.org/").unwrap();
 /// print!("{}", u8_arr);
 /// ```
 ///
@@ -334,13 +334,14 @@ pub fn qr_bytes<D: AsRef<[u8]>>(data: D) -> Result<Vec<u8>, QrError> {
 /// # Examples
 ///
 /// ```rust
-/// let svg_str = qrcode_term::qr_svg("https://rust-lang.org/").unwrap();
+/// let svg_str = qrcode::qr_svg("https://rust-lang.org/").unwrap();
 /// print!("{}", svg_str);
 /// ```
 ///
 /// # Panics
 ///
 /// Panics if generating the QR code string failed.
+#[cfg_attr(feature = "svg", doc = " ```rust")]
 pub fn qr_svg<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
     let code = QrCode::with_version(data, Version::Normal(5), EcLevel::M).unwrap();
     let svg = code
@@ -352,6 +353,7 @@ pub fn qr_svg<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
     Ok(svg)
 }
 
+#[cfg_attr(feature = "image", doc = " ```rust")]
 pub fn qr_image<D: AsRef<[u8]>>(data: D, path: &str) {
     // Image generation
     // Encode some data into bits.
