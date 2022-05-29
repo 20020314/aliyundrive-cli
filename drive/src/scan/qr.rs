@@ -7,13 +7,13 @@ use std::time;
 
 // generator qrcode
 const GENERATOR_QRCODE_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appEntrance=web&lang=zh_CN";
-// query scanner result (include mobile scan)
+// query scanner result (include mobile token)
 const QUERY_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/query.do?appName=aliyun_drive&fromSite=52&_bx-v=2.0.31";
 // get session id
 const SESSION_ID_API: &str = "https://auth.aliyundrive.com/v2/oauth/authorize?client_id=25dzX3vbYqktVxyX&redirect_uri=https%3A%2F%2Fwww.aliyundrive.com%2Fsign%2Fcallback&response_type=code&login_type=custom&state=%7B%22origin%22%3A%22https%3A%2F%2Fwww.aliyundrive.com%22%7D#/nestedlogin?keepLogin=false&hidePhoneCode=true&ad__pass__q__rememberLogin=true&ad__pass__q__rememberLoginDefaultValue=true&ad__pass__q__forgotPassword=true&ad__pass__q__licenseMargin=true&ad__pass__q__loginType=normal";
 // scan scan result（include authorization code）
 const TOKEN_LOGIN_API: &str = "https://auth.aliyundrive.com/v2/oauth/token_login";
-// get web side scan
+// get web side token
 const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
 
 const SESSION_ID_KEY: &str = "SESSIONID";
@@ -60,12 +60,12 @@ impl LoginQrCodeScanner {
 }
 
 impl QrCodeScanner for LoginQrCodeScanner {
-    fn get_generator_result(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult> {
+    fn generator(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult> {
         let resp = self.client.get(GENERATOR_QRCODE_API).send()?;
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp)
     }
 
-    fn get_query_result(
+    fn query(
         &self,
         from: &query::QueryQrCodeCkForm,
     ) -> crate::ScanResult<query::QueryQrCodeResult> {

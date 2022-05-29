@@ -4,15 +4,29 @@ use drive::models::{AuthorizationToken, Ok};
 use drive::scan::qr::LoginQrCodeScanner;
 use drive::scan::{QrCodeScanner, QrCodeScannerState};
 use std::{thread, time};
+use std::io::Write;
 
 fn main() {
+    std::env::set_var("RUST_LOG", "DEBUG");
+    env_logger::builder()
+        .format(|buf, record| {
+            writeln!(
+                buf,
+                "{} {}: {}",
+                record.level(),
+                //Format like you want to: <-----------------
+                chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.3f"),
+                record.args()
+            )
+        })
+        .init();
     let scanner = LoginQrCodeScanner::new();
-    let generator_result = scanner.get_generator_result().unwrap();
+    let generator_result = scanner.generator().unwrap();
     let ck_form = QueryQrCodeCkForm::from(&generator_result);
     qrcode::qr_print(ck_form.get_content()).expect("print qrcode error.");
     println!("{:#?}", &ck_form);
     loop {
-        let query_result = scanner.get_query_result(&ck_form).unwrap();
+        let query_result = scanner.query(&ck_form).unwrap();
         if query_result.ok() {
             if query_result.is_expired() {
                 break;
