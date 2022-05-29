@@ -17,7 +17,7 @@ pub use crate::types::{Color, EcLevel, QrResult, Version};
 
 use crate::cast::As;
 use checked_int_cast::CheckedIntCast;
-use image::{Luma};
+use image::Luma;
 use matrix::Matrix;
 use render::{svg, unicode, Pixel, Renderer};
 use render_term::RendererTerminal;

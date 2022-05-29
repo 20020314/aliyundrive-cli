@@ -13,5 +13,5 @@ serde_yaml = "0.8.24"
 lazy_static = "1.4.0"
 anyhow = "1.0"
 
-qrcode = {path = "../qrcode" }
+qrcode = { path = "../qrcode" }
 drive = { path = "../drive" }

@@ -1,8 +1,15 @@
-use std::collections::HashMap;
+use clap::arg;
+use conf::rw::RW;
+use conf::{Config, Context};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let resp =
-        reqwest::blocking::get("https://httpbin.org/ip")?.json::<HashMap<String, String>>()?;
-    println!("{:#?}", resp);
+fn main() -> anyhow::Result<()> {
+    env_logger::init();
+    clap::Command::new("aliyundrive-cli")
+        .about("Alibaba Cloud Disk Terminal CLI Tool")
+        .arg(arg!(-t --token <TOKEN>).help("").required(false))
+        .get_matches();
+    Context::write(conf::Config::default())?;
+    let config = Context::read().unwrap();
+    println!("{:?}", config);
     Ok(())
 }

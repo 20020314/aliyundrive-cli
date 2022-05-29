@@ -1,9 +1,9 @@
 use crate::cast::As;
+use image::ImageError;
 use std::cmp::{Ordering, PartialOrd};
 use std::default::Default;
 use std::fmt::{Display, Error, Formatter};
 use std::ops::Not;
-use image::ImageError;
 
 //------------------------------------------------------------------------------
 //{{{ QrResult
@@ -29,7 +29,7 @@ pub enum QrError {
     InvalidCharacter,
 
     // image generator error
-    Image
+    Image,
 }
 
 impl Display for QrError {
@@ -40,7 +40,7 @@ impl Display for QrError {
             QrError::UnsupportedCharacterSet => "unsupported character set",
             QrError::InvalidEciDesignator => "invalid ECI designator",
             QrError::InvalidCharacter => "invalid character",
-            QrError::Image => "error in generating qr code image"
+            QrError::Image => "error in generating qr code image",
         };
         fmt.write_str(msg)
     }
@@ -49,7 +49,7 @@ impl Display for QrError {
 impl ::std::error::Error for QrError {}
 
 impl From<ImageError> for QrError {
-    fn from(_ : ImageError) -> Self {
+    fn from(_: ImageError) -> Self {
         QrError::Image
     }
 }
