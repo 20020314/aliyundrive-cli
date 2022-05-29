@@ -127,3 +127,31 @@ impl RW<Config, AuthorizationToken> for Context {
         Context::write(config)
     }
 }
+
+#[cfg(test)]
+mod tests{
+    use crate::{AuthorizationToken, Config, RW};
+
+    #[test]
+    fn read_test() {
+        let p1 = AuthorizationToken::new(String::from("a1"), String::from("a2"));
+        let p2 = AuthorizationToken::new(String::from("a3"), String::from("a4"));
+        let config = Config::new(Some(p1), Some(p2));
+        crate::Context::write(config).unwrap();
+        let read_config = crate::Context::read().unwrap();
+        println!("{:?}", read_config);
+
+        let t1 = crate::Context::read_token(false).unwrap();
+        println!("{:?}", t1);
+        let t2 = crate::Context::read_token(true).unwrap();
+        println!("{:?}", t2);
+
+        let p3 = AuthorizationToken::new(String::from("a5"), String::from("a6"));
+        let p4 = AuthorizationToken::new(String::from("a7"), String::from("a8"));
+        crate::Context::write_token(false, p3).unwrap();
+        crate::Context::write_token(true, p4).unwrap();
+
+        let read_config = crate::Context::read().unwrap();
+        println!("{:?}", read_config);
+    }
+}

@@ -9,12 +9,12 @@ use std::{thread, time};
 
 fn main() {
     let scanner = LoginQrCodeScanner::new();
-    let generator_result = scanner.get_generator_result().unwrap();
+    let generator_result = scanner.generator().unwrap();
     let ck_form = QueryQrCodeCkForm::from(&generator_result);
     qrcode::qr_print(ck_form.get_content()).expect("print qrcode error.");
     println!("{:#?}", &ck_form);
     loop {
-        let query_result = scanner.get_query_result(&ck_form).unwrap();
+        let query_result = scanner.query(&ck_form).unwrap();
         if query_result.ok() {
             if query_result.is_expired() {
                 break;
