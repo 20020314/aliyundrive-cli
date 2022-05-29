@@ -1,4 +1,7 @@
+extern crate core;
+
 use std::ops::Index;
+
 pub mod bits;
 pub mod canvas;
 mod cast;
@@ -14,7 +17,7 @@ pub use crate::types::{Color, EcLevel, QrResult, Version};
 
 use crate::cast::As;
 use checked_int_cast::CheckedIntCast;
-use image::Luma;
+use image::{Luma};
 use matrix::Matrix;
 use render::{svg, unicode, Pixel, Renderer};
 use render_term::RendererTerminal;
@@ -265,7 +268,7 @@ const QUIET_ZONE_WIDTH: usize = 2;
 /// # Panics
 ///
 /// Panics if printing the QR code to the terminal failed.
-pub fn qr_print<D: AsRef<[u8]>>(data: D) -> Result<(), QrError> {
+pub fn qr_print<D: AsRef<[u8]>>(data: D) -> QrResult<()> {
     // Generate QR code pixel matrix
     let mut matrix = Qr::from(data)?.to_matrix();
     matrix.surround(QUIET_ZONE_WIDTH, render_term::QrLight);
@@ -289,7 +292,7 @@ pub fn qr_print<D: AsRef<[u8]>>(data: D) -> Result<(), QrError> {
 /// # Panics
 ///
 /// Panics if generating the QR code string failed.
-pub fn qr_string<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
+pub fn qr_string<D: AsRef<[u8]>>(data: D) -> QrResult<String> {
     // Generate QR code pixel matrix
     let mut matrix = Qr::from(data)?.to_matrix();
     matrix.surround(QUIET_ZONE_WIDTH, render_term::QrLight);
@@ -316,7 +319,7 @@ pub fn qr_string<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
 /// # Panics
 ///
 /// Panics if generating the QR code string failed.
-pub fn qr_bytes<D: AsRef<[u8]>>(data: D) -> Result<Vec<u8>, QrError> {
+pub fn qr_bytes<D: AsRef<[u8]>>(data: D) -> QrResult<Vec<u8>> {
     let code = QrCode::new(data).unwrap();
     // unicode string qrcode
     let unicode_qrcode = code
@@ -342,7 +345,7 @@ pub fn qr_bytes<D: AsRef<[u8]>>(data: D) -> Result<Vec<u8>, QrError> {
 ///
 /// Panics if generating the QR code string failed.
 #[cfg_attr(feature = "svg", doc = " ```rust")]
-pub fn qr_svg<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
+pub fn qr_svg<D: AsRef<[u8]>>(data: D) -> QrResult<String> {
     let code = QrCode::with_version(data, Version::Normal(5), EcLevel::M).unwrap();
     let svg = code
         .render()
@@ -354,15 +357,19 @@ pub fn qr_svg<D: AsRef<[u8]>>(data: D) -> Result<String, QrError> {
 }
 
 #[cfg_attr(feature = "image", doc = " ```rust")]
-pub fn qr_image<D: AsRef<[u8]>>(data: D, path: &str) {
+pub fn qr_image<D: AsRef<[u8]>>(data: D, path: &str) -> QrResult<()> {
     // Image generation
     // Encode some data into bits.
-    let code = QrCode::new(data).unwrap();
+    let code = QrCode::new(data)?;
     // Render the bits into an image.
     let image = code.render::<Luma<u8>>().build();
 
     // Save the image.
-    image.save(path).unwrap();
+    let result = image.save(path);
+    if let Some(e) = result.err() {
+        return Err(QrError::from(e));
+    }
+    Ok(())
 }
 
 /// Raw QR code.

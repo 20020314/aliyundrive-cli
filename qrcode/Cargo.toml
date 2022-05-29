@@ -12,10 +12,8 @@ checked_int_cast = "1"
 regex = "1.5.5"
 
 [features]
-default = ["image", "svg", "png"]
-bench = []
+default = ["image", "svg"]
 svg = []
-png = []
 
 [lib]
 name = "qrcode"

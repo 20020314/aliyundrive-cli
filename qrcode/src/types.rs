@@ -3,6 +3,7 @@ use std::cmp::{Ordering, PartialOrd};
 use std::default::Default;
 use std::fmt::{Display, Error, Formatter};
 use std::ops::Not;
+use image::ImageError;
 
 //------------------------------------------------------------------------------
 //{{{ QrResult
@@ -26,6 +27,9 @@ pub enum QrError {
 
     /// A character not belonging to the character set is found.
     InvalidCharacter,
+
+    // image generator error
+    Image
 }
 
 impl Display for QrError {
@@ -36,12 +40,19 @@ impl Display for QrError {
             QrError::UnsupportedCharacterSet => "unsupported character set",
             QrError::InvalidEciDesignator => "invalid ECI designator",
             QrError::InvalidCharacter => "invalid character",
+            QrError::Image => "error in generating qr code image"
         };
         fmt.write_str(msg)
     }
 }
 
 impl ::std::error::Error for QrError {}
+
+impl From<ImageError> for QrError {
+    fn from(_ : ImageError) -> Self {
+        QrError::Image
+    }
+}
 
 /// `QrResult` is a convenient alias for a QR code generation result.
 pub type QrResult<T> = Result<T, QrError>;
