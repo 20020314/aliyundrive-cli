@@ -393,10 +393,10 @@ mod tests {
     #[test]
     fn test_api() {
         // 终端打印二维码
-        qr_print("https://github.com/zf1976/pancli").unwrap();
+        qr_print("https://github.com/gngpp/aliyundrive-cli").unwrap();
 
         // 二维码字节数组
-        let qrcode_bytes = qr_bytes("https://github.com/zf1976/pancli").unwrap();
+        let qrcode_bytes = qr_bytes("https://github.com/gngpp/aliyundrive-cli").unwrap();
         println!("{:?}", qrcode_bytes.as_slice());
     }
 
