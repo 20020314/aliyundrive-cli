@@ -1,6 +1,6 @@
 pub mod qr;
 
-use crate::models::{auth, gen, query, suc};
+use crate::models::{auth, gen, query, suc, CkForm};
 
 #[allow(dead_code)]
 pub enum State {
@@ -31,10 +31,7 @@ pub trait QrCodeScanner {
     fn generator(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult>;
 
     // query qrcode result
-    fn query(
-        &self,
-        from: &query::QueryQrCodeCkForm,
-    ) -> crate::ScanResult<query::QueryQrCodeResult>;
+    fn query<T: CkForm>(&self, from: &T) -> crate::ScanResult<query::QueryQrCodeResult>;
 
     // scan scan result（include authorization code）
     fn token_login(&self, token: auth::Token) -> crate::ScanResult<suc::GotoResult>;

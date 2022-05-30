@@ -129,12 +129,11 @@ impl RW<Config, AuthorizationToken> for Context {
 }
 
 #[cfg(test)]
-mod tests{
+mod tests {
     use crate::{AuthorizationToken, Config, RW};
 
     #[test]
     fn read_write_test() {
-
         let read_config = crate::Context::read().unwrap();
         println!("{:?}", read_config);
 

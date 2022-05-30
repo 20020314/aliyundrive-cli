@@ -1,5 +1,5 @@
 use crate::error::QrCodeScannerError;
-use crate::models::{auth, gen, query, suc};
+use crate::models::{auth, gen, query, suc, CkForm};
 use crate::scan::QrCodeScanner;
 use anyhow::anyhow;
 use reqwest::blocking::Response;
@@ -65,11 +65,8 @@ impl QrCodeScanner for LoginQrCodeScanner {
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp)
     }
 
-    fn query(
-        &self,
-        from: &query::QueryQrCodeCkForm,
-    ) -> crate::ScanResult<query::QueryQrCodeResult> {
-        let resp = self.client.post(QUERY_API).form(&from.to_map()).send()?;
+    fn query<T: CkForm>(&self, from: &T) -> crate::ScanResult<query::QueryQrCodeResult> {
+        let resp = self.client.post(QUERY_API).form(&from.map_form()).send()?;
         ResponseHandler::response_handler::<query::QueryQrCodeResult>(resp)
     }
 

@@ -3,8 +3,8 @@ use drive::models::query::QueryQrCodeCkForm;
 use drive::models::{AuthorizationToken, Ok};
 use drive::scan::qr::LoginQrCodeScanner;
 use drive::scan::{QrCodeScanner, QrCodeScannerState};
-use std::{thread, time};
 use std::io::Write;
+use std::{thread, time};
 
 fn main() {
     std::env::set_var("RUST_LOG", "DEBUG");
@@ -22,8 +22,8 @@ fn main() {
         .init();
     let scanner = LoginQrCodeScanner::new();
     let generator_result = scanner.generator().unwrap();
-    let ck_form = QueryQrCodeCkForm::from(&generator_result);
-    qrcode::qr_print(ck_form.get_content()).expect("print qrcode error.");
+    qrcode::qr_print(generator_result.get_content()).expect("print qrcode error.");
+    let ck_form: QueryQrCodeCkForm = generator_result.into();
     println!("{:#?}", &ck_form);
     loop {
         let query_result = scanner.query(&ck_form).unwrap();

@@ -1,5 +1,4 @@
-use super::gen;
-use crate::models::{suc, Ok};
+use crate::models::{suc, CkForm, Ok};
 use crate::scan::{QrCodeScannerState, State};
 use serde::{Deserialize, Serialize};
 
@@ -173,38 +172,22 @@ impl QueryQrCodeContentData {
 pub struct QueryQrCodeCkForm {
     t: i64,
     ck: String,
-    code_content: String,
 }
 
 impl QueryQrCodeCkForm {
-    #[allow(dead_code)]
-    pub fn new() -> Self {
+    pub fn new(from: (i64, String)) -> Self {
         Self {
-            t: 0,
-            ck: String::new(),
-            code_content: String::new(),
+            t: from.0,
+            ck: from.1,
         }
-    }
-
-    pub fn get_content(&self) -> &str {
-        self.code_content.as_str()
-    }
-
-    pub fn to_map(&self) -> std::collections::HashMap<String, String> {
-        let mut params = std::collections::HashMap::<String, String>::new();
-        params.insert(crate::models::T_KEY.to_string(), self.t.to_string());
-        params.insert(crate::models::CK_KEY.to_string(), self.ck.to_string());
-        params
     }
 }
 
-impl<'a> From<&'a gen::GeneratorQrCodeResult> for QueryQrCodeCkForm {
-    fn from(gen: &gen::GeneratorQrCodeResult) -> Self {
-        let data = gen.get_tuple();
-        QueryQrCodeCkForm {
-            t: data.0,
-            ck: data.1,
-            code_content: data.2,
-        }
+impl CkForm for QueryQrCodeCkForm {
+    fn map_form(&self) -> std::collections::HashMap<String, String> {
+        let mut ck_map = std::collections::HashMap::<String, String>::new();
+        ck_map.insert(crate::models::T_KEY.to_string(), self.t.to_string());
+        ck_map.insert(crate::models::CK_KEY.to_string(), self.ck.to_string());
+        ck_map
     }
 }

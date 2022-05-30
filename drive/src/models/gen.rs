@@ -1,4 +1,4 @@
-use crate::models::Ok;
+use crate::models::{query, Ok};
 use serde::{Deserialize, Serialize};
 
 // build qrcode result
@@ -22,21 +22,32 @@ impl GeneratorQrCodeResult {
         }
     }
 
-    pub fn get_tuple(&self) -> (i64, String, String) {
+    pub fn get_content(&self) -> String {
+        if let Some(ref content) = self.content {
+            if let Some(ref data) = content.data {
+                let code_content = match &data.code_content {
+                    None => String::new(),
+                    Some(code_content) => code_content.to_string(),
+                };
+                return code_content;
+            }
+        }
+        String::new()
+    }
+}
+
+impl Into<query::QueryQrCodeCkForm> for GeneratorQrCodeResult {
+    fn into(self) -> query::QueryQrCodeCkForm {
         if let Some(ref content) = self.content {
             if let Some(ref data) = content.data {
                 let ck = match &data.ck {
                     None => String::new(),
                     Some(ck) => ck.to_string(),
                 };
-                let code_content = match &data.code_content {
-                    None => String::new(),
-                    Some(code_content) => code_content.to_string(),
-                };
-                return (data.t, ck, code_content);
+                return query::QueryQrCodeCkForm::new((data.t, ck));
             }
         }
-        (0, String::new(), String::new())
+        query::QueryQrCodeCkForm::new((0, String::new()))
     }
 }
 

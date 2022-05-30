@@ -8,6 +8,10 @@ pub const LOGIN_TYPE: &str = "normal";
 pub const CK_KEY: &str = "ck";
 pub const T_KEY: &str = "t";
 
+pub trait CkForm {
+    fn map_form(&self) -> std::collections::HashMap<String, String>;
+}
+
 pub trait AuthorizationToken {
     fn access_token(&self) -> Option<String>;
 
