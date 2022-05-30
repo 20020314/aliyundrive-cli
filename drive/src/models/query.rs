@@ -1,9 +1,11 @@
+#![allow(dead_code)]
+
 use crate::models::{suc, CkForm, Ok};
 use crate::scan::{QrCodeScannerState, State};
 use serde::{Deserialize, Serialize};
 
 // query qrcode scan status
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Default)]
 pub struct QueryQrCodeResult {
     #[serde(default)]
     #[serde(rename = "content")]
@@ -83,7 +85,7 @@ impl QrCodeScannerState for QueryQrCodeResult {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Default)]
 pub struct QueryQrCodeContent {
     #[serde(rename = "data")]
     data: Option<QueryQrCodeContentData>,
@@ -106,7 +108,7 @@ impl QueryQrCodeContent {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq)]
 pub struct QueryQrCodeContentData {
     #[serde(default)]
     #[serde(rename = "loginResult")]
@@ -168,7 +170,7 @@ impl QueryQrCodeContentData {
 }
 
 // query qrcode status form
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Serialize, Default)]
 pub struct QueryQrCodeCkForm {
     t: i64,
     ck: String,

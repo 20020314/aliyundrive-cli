@@ -24,7 +24,6 @@ fn main() {
     let generator_result = scanner.generator().unwrap();
     qrcode::qr_print(generator_result.get_content()).expect("print qrcode error.");
     let ck_form: QueryQrCodeCkForm = generator_result.into();
-    println!("{:#?}", &ck_form);
     loop {
         let query_result = scanner.query(&ck_form).unwrap();
         if query_result.ok() {

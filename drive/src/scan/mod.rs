@@ -31,13 +31,13 @@ pub trait QrCodeScanner {
     fn generator(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult>;
 
     // query qrcode result
-    fn query<T: CkForm>(&self, from: &T) -> crate::ScanResult<query::QueryQrCodeResult>;
+    fn query(&self, from: &impl CkForm) -> crate::ScanResult<query::QueryQrCodeResult>;
 
     // scan scan result（include authorization code）
     fn token_login(&self, token: auth::Token) -> crate::ScanResult<suc::GotoResult>;
 
     // get web side scan
-    fn get_token(&self, auth: auth::AuthorizationCode) -> crate::ScanResult<suc::WebLoginResult>;
+    fn get_token(&self, authorization_code: auth::AuthorizationCode) -> crate::ScanResult<suc::WebLoginResult>;
 }
 
 pub trait QrCodeScannerState {

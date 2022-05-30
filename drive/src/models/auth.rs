@@ -1,14 +1,15 @@
+#![allow(dead_code)]
 use crate::models::suc::GotoResult;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Debug, Default)]
 pub struct Token {
     #[serde(rename = "token")]
     #[serde(default)]
     value: Option<String>,
 }
 
-impl<'a> From<&'a String> for Token {
+impl From<&String> for Token {
     fn from(token: &String) -> Self {
         Self {
             value: Some(token.to_string()),
@@ -16,7 +17,7 @@ impl<'a> From<&'a String> for Token {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Debug, Default)]
 pub struct AuthorizationCode {
     #[serde(rename = "code")]
     #[serde(default)]
@@ -27,7 +28,7 @@ pub struct AuthorizationCode {
     login_type: Option<String>,
 }
 
-impl<'a> From<&'a GotoResult> for AuthorizationCode {
+impl From<&GotoResult> for AuthorizationCode {
     fn from(from: &GotoResult) -> Self {
         let code = from.extract_authorization_code();
         match code {

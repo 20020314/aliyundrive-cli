@@ -1,9 +1,11 @@
+#![allow(dead_code)]
+
 use crate::models::AuthorizationToken;
 use anyhow::anyhow;
 use reqwest::Url;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize};
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug, Default)]
 pub struct GotoResult {
     #[serde(default)]
     goto: Option<String>,
@@ -40,7 +42,7 @@ impl GotoResult {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug, Default)]
 pub struct MobileLoginResult {
     pds_login_result: Option<PdsLoginResult>,
 }
@@ -59,7 +61,7 @@ impl AuthorizationToken for MobileLoginResult {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug, Default)]
 pub struct PdsLoginResult {
     #[serde(rename = "role")]
     #[serde(default)]
@@ -146,7 +148,7 @@ pub struct PdsLoginResult {
     status: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug, Default)]
 pub struct UserData {
     #[serde(rename = "DingDingRobotUrl")]
     #[serde(default)]
@@ -161,7 +163,7 @@ pub struct UserData {
     following_desc: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug, Default)]
 pub struct WebLoginResult {
     #[serde(default)]
     default_sbox_drive_id: Option<String>,
