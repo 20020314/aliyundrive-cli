@@ -15,3 +15,8 @@ anyhow = "1.0"
 
 qrcode = { path = "../qrcode" }
 drive = { path = "../drive" }
+
+[lib]
+name = "drive"
+path = "src/lib.rs"
+
