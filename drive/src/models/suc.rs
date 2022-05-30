@@ -5,7 +5,7 @@ use anyhow::anyhow;
 use reqwest::Url;
 use serde::{Deserialize};
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug)]
 pub struct GotoResult {
     #[serde(default)]
     goto: Option<String>,
@@ -42,8 +42,9 @@ impl GotoResult {
     }
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug)]
 pub struct MobileLoginResult {
+    #[serde(default)]
     pds_login_result: Option<PdsLoginResult>,
 }
 
@@ -61,7 +62,7 @@ impl AuthorizationToken for MobileLoginResult {
     }
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug)]
 pub struct PdsLoginResult {
     #[serde(rename = "role")]
     #[serde(default)]
@@ -148,7 +149,7 @@ pub struct PdsLoginResult {
     status: Option<String>,
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug)]
 pub struct UserData {
     #[serde(rename = "DingDingRobotUrl")]
     #[serde(default)]

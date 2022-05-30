@@ -4,7 +4,7 @@ use crate::models::{query, Ok};
 use serde::{Deserialize};
 
 // build qrcode result
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize)]
 pub struct GeneratorQrCodeResult {
     #[serde(default)]
     #[serde(rename = "content")]
@@ -62,7 +62,7 @@ impl Ok for GeneratorQrCodeResult {
     }
 }
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize)]
 pub struct GeneratorQrCodeContent {
     #[serde(default)]
     #[serde(rename = "data")]
@@ -88,7 +88,7 @@ impl GeneratorQrCodeContent {
     }
 }
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize)]
 pub struct GeneratorQrCodeContentData {
     #[serde(rename = "t")]
     #[serde(default)]

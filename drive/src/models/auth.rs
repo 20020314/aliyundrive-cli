@@ -2,7 +2,7 @@
 use crate::models::suc::GotoResult;
 use serde::{Serialize};
 
-#[derive(Serialize, Debug, Default)]
+#[derive(Serialize, Debug)]
 pub struct Token {
     #[serde(rename = "token")]
     #[serde(default)]
@@ -17,7 +17,7 @@ impl From<&String> for Token {
     }
 }
 
-#[derive(Serialize, Debug, Default)]
+#[derive(Serialize, Debug)]
 pub struct AuthorizationCode {
     #[serde(rename = "code")]
     #[serde(default)]

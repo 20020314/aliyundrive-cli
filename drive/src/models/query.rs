@@ -5,7 +5,7 @@ use crate::scan::{QrCodeScannerState, State};
 use serde::{Deserialize, Serialize};
 
 // query qrcode scan status
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize)]
 pub struct QueryQrCodeResult {
     #[serde(default)]
     #[serde(rename = "content")]
@@ -85,7 +85,7 @@ impl QrCodeScannerState for QueryQrCodeResult {
     }
 }
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize)]
 pub struct QueryQrCodeContent {
     #[serde(rename = "data")]
     data: Option<QueryQrCodeContentData>,
@@ -108,7 +108,7 @@ impl QueryQrCodeContent {
     }
 }
 
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq)]
 pub struct QueryQrCodeContentData {
     #[serde(default)]
     #[serde(rename = "loginResult")]
