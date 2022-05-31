@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use crate::models::gen::GeneratorQrCodeResult;
 use crate::models::{suc, CkForm, Ok};
 use crate::scan::State;
 use serde::{Deserialize, Serialize};
@@ -57,6 +58,15 @@ impl Ok for QueryQrCodeResult {
 }
 
 impl QueryQrCodeResult {
+    pub fn is_new(&self) -> bool {
+        if let Some(ref state) = self.get_status() {
+            if State::NEW.eq(state) {
+                return true;
+            }
+        }
+        false
+    }
+
     pub fn is_expired(&self) -> bool {
         if let Some(ref state) = self.get_status() {
             if State::EXPIRED.eq(state) {
@@ -142,24 +152,6 @@ pub struct QueryQrCodeContentData {
     smart_lock: bool,
 }
 
-impl QueryQrCodeContentData {
-    #[allow(dead_code)]
-    pub fn new() -> Self {
-        Self {
-            login_result: None,
-            login_suc_result_action: None,
-            st: None,
-            qr_code_status: None,
-            login_type: None,
-            biz_ext: None,
-            login_scene: None,
-            result_code: 0,
-            app_entrance: None,
-            smart_lock: false,
-        }
-    }
-}
-
 // query qrcode status form
 #[derive(Debug, Serialize, Default)]
 pub struct QueryQrCodeCkForm {
@@ -172,6 +164,27 @@ impl QueryQrCodeCkForm {
         Self {
             t: from.0,
             ck: from.1,
+        }
+    }
+}
+
+impl From<GeneratorQrCodeResult> for QueryQrCodeCkForm {
+    fn from(from: GeneratorQrCodeResult) -> Self {
+        if let Some(ref content) = from.get_content() {
+            if let Some(ref data) = content.get_data() {
+                let ck = match data.get_ck() {
+                    None => String::new(),
+                    Some(ck) => ck,
+                };
+                return Self {
+                    t: data.get_t(),
+                    ck,
+                };
+            }
+        }
+        Self {
+            t: 0,
+            ck: String::new(),
         }
     }
 }

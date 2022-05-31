@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::models::{query, Ok};
+use crate::models::Ok;
 use serde::Deserialize;
 
 // build qrcode result
@@ -24,7 +24,11 @@ impl GeneratorQrCodeResult {
         }
     }
 
-    pub fn get_content(&self) -> String {
+    pub fn get_content(&self) -> Option<GeneratorQrCodeContent> {
+        self.content.as_ref().cloned()
+    }
+
+    pub fn get_qrcode_content(&self) -> String {
         if let Some(ref content) = self.content {
             if let Some(ref data) = content.data {
                 let code_content = match &data.code_content {
@@ -38,21 +42,6 @@ impl GeneratorQrCodeResult {
     }
 }
 
-impl Into<query::QueryQrCodeCkForm> for GeneratorQrCodeResult {
-    fn into(self) -> query::QueryQrCodeCkForm {
-        if let Some(ref content) = self.content {
-            if let Some(ref data) = content.data {
-                let ck = match &data.ck {
-                    None => String::new(),
-                    Some(ck) => ck.to_string(),
-                };
-                return query::QueryQrCodeCkForm::new((data.t, ck));
-            }
-        }
-        query::QueryQrCodeCkForm::new((0, String::new()))
-    }
-}
-
 impl Ok for GeneratorQrCodeResult {
     fn ok(&self) -> bool {
         if let Some(ref t) = self.content {
@@ -62,7 +51,7 @@ impl Ok for GeneratorQrCodeResult {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct GeneratorQrCodeContent {
     #[serde(default)]
     #[serde(rename = "data")]
@@ -78,17 +67,12 @@ pub struct GeneratorQrCodeContent {
 }
 
 impl GeneratorQrCodeContent {
-    #[allow(dead_code)]
-    pub fn new() -> Self {
-        Self {
-            data: None,
-            status: 0,
-            success: false,
-        }
+    pub fn get_data(&self) -> Option<GeneratorQrCodeContentData> {
+        self.data.as_ref().cloned()
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct GeneratorQrCodeContentData {
     #[serde(rename = "t")]
     #[serde(default)]
@@ -124,17 +108,11 @@ pub struct GeneratorQrCodeContentData {
 }
 
 impl GeneratorQrCodeContentData {
-    #[allow(dead_code)]
-    pub fn new() -> Self {
-        Self {
-            t: 0,
-            code_content: None,
-            ck: None,
-            result_code: 0,
-            title_msg: None,
-            trace_id: None,
-            error_code: None,
-            is_mobile: false,
-        }
+    pub fn get_ck(&self) -> Option<String> {
+        self.ck.as_ref().cloned()
+    }
+
+    pub fn get_t(&self) -> i64 {
+        self.t
     }
 }

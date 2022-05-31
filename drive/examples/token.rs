@@ -6,7 +6,6 @@ use std::io::Write;
 use std::{thread, time};
 
 fn main() {
-    std::env::set_var("RUST_LOG", "DEBUG");
     env_logger::builder()
         .format(|buf, record| {
             writeln!(
@@ -21,11 +20,24 @@ fn main() {
         .init();
     let scan = QrCodeScanner::new().unwrap();
     let generator_result = scan.generator().unwrap();
-    qrcode::qr_print(generator_result.get_content()).expect("print qrcode error.");
-    let ck_form: QueryQrCodeCkForm = generator_result.into();
-    loop {
+    qrcode::qr_print(generator_result.get_qrcode_content()).expect("print qrcode error.");
+    let ck_form = QueryQrCodeCkForm::from(generator_result);
+    for _i in 0..10 {
         let query_result = scan.query(&ck_form).unwrap();
         if query_result.ok() {
+            // query_result.is_new() 表示未扫码状态
+            if query_result.is_new() {
+                println!("new");
+                // 做点什么..
+                continue;
+            }
+            // query_result.is_expired() 表示扫码成功，但未点击确认登陆
+            if query_result.is_expired() {
+                // 做点什么..
+                println!("expired");
+                continue;
+            }
+            // 移动端APP扫码成功并确认登陆
             if query_result.is_confirmed() {
                 let mobile_login_result = query_result.get_mobile_login_result().unwrap();
                 println!("mobile_login_result: {:#?}", mobile_login_result);
@@ -52,9 +64,6 @@ fn main() {
 
                 let refresh_token = web_login_result.refresh_token().unwrap();
                 println!("web_login_result-refresh_token: {}\n", refresh_token);
-            }
-            if query_result.is_expired() {
-                break;
             }
         }
         thread::sleep(time::Duration::from_secs(2));

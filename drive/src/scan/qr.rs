@@ -29,7 +29,7 @@ impl QrCodeScanner {
         let client = reqwest::blocking::Client::builder()
             .pool_idle_timeout(time::Duration::from_secs(50))
             .connect_timeout(time::Duration::from_secs(10))
-            .timeout(time::Duration::from_secs( 30))
+            .timeout(time::Duration::from_secs(30))
             .build()?;
         let resp = client
             .get(SESSION_ID_API)
@@ -47,7 +47,6 @@ impl QrCodeScanner {
         }
         return Err(anyhow!("Failed to get session id."));
     }
-
 }
 
 impl QrCodeScanner {
@@ -75,7 +74,10 @@ impl QrCodeScanner {
         ResponseHandler::response_handler::<suc::GotoResult>(resp)
     }
 
-    pub fn get_token(&self, auth: auth::AuthorizationCode) -> crate::ScanResult<suc::WebLoginResult> {
+    pub fn get_token(
+        &self,
+        auth: auth::AuthorizationCode,
+    ) -> crate::ScanResult<suc::WebLoginResult> {
         let resp = self
             .client
             .post(GET_WEB_TOKEN_API)
