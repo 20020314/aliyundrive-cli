@@ -23,6 +23,7 @@ fn main() {
     qrcode::qr_print(generator_result.get_qrcode_content()).expect("print qrcode error.");
     let ck_form = QueryQrCodeCkForm::from(generator_result);
     for _i in 0..10 {
+        thread::sleep(time::Duration::from_secs(2));
         let query_result = scan.query(&ck_form).unwrap();
         if query_result.ok() {
             // query_result.is_new() 表示未扫码状态
@@ -66,6 +67,5 @@ fn main() {
                 println!("web_login_result-refresh_token: {}\n", refresh_token);
             }
         }
-        thread::sleep(time::Duration::from_secs(2));
     }
 }
