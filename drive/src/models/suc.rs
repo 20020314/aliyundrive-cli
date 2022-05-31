@@ -3,7 +3,7 @@
 use crate::models::AuthorizationToken;
 use anyhow::anyhow;
 use reqwest::Url;
-use serde::{Deserialize};
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct GotoResult {
@@ -229,12 +229,10 @@ pub struct WebLoginResult {
 
 impl AuthorizationToken for WebLoginResult {
     fn access_token(&self) -> Option<String> {
-        let access_token = self.access_token.as_ref()?;
-        Some(access_token.to_string())
+        self.access_token.as_ref().cloned()
     }
 
     fn refresh_token(&self) -> Option<String> {
-        let refresh_token = self.refresh_token.as_ref()?;
-        Some(refresh_token.to_string())
+        self.refresh_token.as_ref().cloned()
     }
 }

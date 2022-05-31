@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 use crate::models::suc::GotoResult;
-use serde::{Serialize};
+use serde::Serialize;
 
 #[derive(Serialize, Debug)]
 pub struct Token {

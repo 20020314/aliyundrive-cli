@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::models::{query, Ok};
-use serde::{Deserialize};
+use serde::Deserialize;
 
 // build qrcode result
 #[derive(Debug, Deserialize)]

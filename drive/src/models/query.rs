@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::models::{suc, CkForm, Ok};
-use crate::scan::{QrCodeScannerState, State};
+use crate::scan::State;
 use serde::{Deserialize, Serialize};
 
 // query qrcode scan status
@@ -39,11 +39,11 @@ impl QueryQrCodeResult {
         Some(biz_ext.to_string())
     }
 
-    fn get_status(&self) -> Option<String> {
+    fn get_status(&self) -> Option<State> {
         let content = self.content.as_ref()?;
         let data = content.data.as_ref()?;
-        let state = data.qr_code_status.as_ref()?;
-        Some(state.to_string())
+        let state = data.qr_code_status.as_ref().cloned()?;
+        Some(state)
     }
 }
 
@@ -56,17 +56,8 @@ impl Ok for QueryQrCodeResult {
     }
 }
 
-impl QrCodeScannerState for QueryQrCodeResult {
-    fn is_new(&self) -> bool {
-        if let Some(ref state) = self.get_status() {
-            if State::NEW.eq(state) {
-                return true;
-            }
-        }
-        false
-    }
-
-    fn is_expired(&self) -> bool {
+impl QueryQrCodeResult {
+    pub fn is_expired(&self) -> bool {
         if let Some(ref state) = self.get_status() {
             if State::EXPIRED.eq(state) {
                 return true;
@@ -75,7 +66,7 @@ impl QrCodeScannerState for QueryQrCodeResult {
         false
     }
 
-    fn is_confirmed(&self) -> bool {
+    pub fn is_confirmed(&self) -> bool {
         if let Some(ref state) = self.get_status() {
             if State::CONFIRMED.eq(state) {
                 return true;
@@ -124,7 +115,7 @@ pub struct QueryQrCodeContentData {
 
     #[serde(default)]
     #[serde(rename = "qrCodeStatus")]
-    qr_code_status: Option<String>,
+    qr_code_status: Option<State>,
 
     #[serde(default)]
     #[serde(rename = "loginType")]
