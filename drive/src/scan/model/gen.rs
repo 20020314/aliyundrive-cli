@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::models::Ok;
+use crate::scan::model::Ok;
 use serde::Deserialize;
 
 // build qrcode result

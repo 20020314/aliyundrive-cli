@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-use crate::models::gen::GeneratorQrCodeResult;
-use crate::models::{suc, CkForm, Ok};
+use crate::scan::model::gen::GeneratorQrCodeResult;
+use crate::scan::model::{suc, CkForm, Ok};
 use crate::scan::State;
 use serde::{Deserialize, Serialize};
 
@@ -192,8 +192,8 @@ impl From<GeneratorQrCodeResult> for QueryQrCodeCkForm {
 impl CkForm for QueryQrCodeCkForm {
     fn map_form(&self) -> std::collections::HashMap<String, String> {
         let mut ck_map = std::collections::HashMap::<String, String>::new();
-        ck_map.insert(crate::models::T_KEY.to_string(), self.t.to_string());
-        ck_map.insert(crate::models::CK_KEY.to_string(), self.ck.to_string());
+        ck_map.insert(crate::scan::model::T_KEY.to_string(), self.t.to_string());
+        ck_map.insert(crate::scan::model::CK_KEY.to_string(), self.ck.to_string());
         ck_map
     }
 }

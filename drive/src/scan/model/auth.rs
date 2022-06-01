@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use crate::models::suc::GotoResult;
+use crate::scan::model::suc::GotoResult;
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
@@ -36,7 +36,7 @@ impl From<&GotoResult> for AuthorizationCode {
                 log::debug!("authorization code: {}", &code);
                 return Self {
                     code: Some(code),
-                    login_type: Some(crate::models::LOGIN_TYPE.to_string()),
+                    login_type: Some(crate::scan::model::LOGIN_TYPE.to_string()),
                 };
             }
             Err(e) => {

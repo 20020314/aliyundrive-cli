@@ -1,4 +1,5 @@
 pub mod qr;
+pub mod model;
 
 use crate::scan::State::{CONFIRMED, EXPIRED, NEW};
 use serde::{de, Deserialize, Deserializer};

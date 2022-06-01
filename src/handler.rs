@@ -1,4 +1,4 @@
-use drive::models::{query, Ok};
+use drive::scan::model::{query, Ok};
 use drive::scan::QrCodeScanner;
 
 pub(crate) fn login_handler() -> anyhow::Result<()> {

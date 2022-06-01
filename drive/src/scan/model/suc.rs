@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::models::AuthorizationToken;
+use crate::scan::model::AuthorizationToken;
 use anyhow::anyhow;
 use reqwest::Url;
 use serde::Deserialize;
@@ -31,7 +31,7 @@ impl GotoResult {
             let key = k_v_array
                 .get(0)
                 .ok_or(anyhow!("goto query param key is None"))?;
-            if *key == crate::models::CODE_KEY {
+            if *key == crate::scan::model::CODE_KEY {
                 let value = k_v_array
                     .get(1)
                     .ok_or(anyhow!("goto query param value is None"))?;

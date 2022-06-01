@@ -1,7 +1,6 @@
 use crate::error::{DriveError, QrCodeScannerError};
 
 pub mod error;
-pub mod models;
 pub mod scan;
 
 pub type ScanResult<T, E = QrCodeScannerError> = Result<T, E>;
