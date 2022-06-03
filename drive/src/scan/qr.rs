@@ -118,7 +118,7 @@ impl ResponseHandler {
     fn response_error_msg_handler(resp: Response) -> String {
         let msg = resp
             .text()
-            .unwrap_or(String::from("An error occurred while extracting the body."));
+            .unwrap_or_else(|e| format!("An error occurred while extracting the body: {:?}", e));
         log::debug!(
             "defined in file: {}, defined on line: {}\nmessage: {:?}",
             file!(),
