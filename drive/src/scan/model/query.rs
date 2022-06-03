@@ -60,7 +60,7 @@ impl Ok for QueryQrCodeResult {
 impl QueryQrCodeResult {
     pub fn is_new(&self) -> bool {
         if let Some(ref state) = self.get_status() {
-            if State::NEW.eq(state) {
+            if State::New.eq(state) {
                 return true;
             }
         }
@@ -69,7 +69,7 @@ impl QueryQrCodeResult {
 
     pub fn is_expired(&self) -> bool {
         if let Some(ref state) = self.get_status() {
-            if State::EXPIRED.eq(state) {
+            if State::Expired.eq(state) {
                 return true;
             }
         }
@@ -78,7 +78,7 @@ impl QueryQrCodeResult {
 
     pub fn is_confirmed(&self) -> bool {
         if let Some(ref state) = self.get_status() {
-            if State::CONFIRMED.eq(state) {
+            if State::Confirmed.eq(state) {
                 return true;
             }
         }

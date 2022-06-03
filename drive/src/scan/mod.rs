@@ -1,5 +1,5 @@
-pub mod qr;
 pub mod model;
+pub mod qr;
 
 use crate::scan::State::{CONFIRMED, EXPIRED, NEW};
 use serde::{de, Deserialize, Deserializer};
@@ -7,20 +7,22 @@ use std::str::FromStr;
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum State {
-    CONFIRMED,
-    EXPIRED,
-    NEW,
+    Confirmed,
+    Expired,
+    New,
 }
 
 impl FromStr for State {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        use State::*;
+
         match s {
-            "NEW" => Ok(NEW),
-            "EXPIRED" => Ok(EXPIRED),
-            "CONFIRMED" => Ok(CONFIRMED),
-            _ => Ok(EXPIRED),
+            "NEW" => Ok(New),
+            "EXPIRED" => Ok(Expired),
+            "CONFIRMED" => Ok(Confirmed),
+            _ => Ok(Expired),
         }
     }
 }
