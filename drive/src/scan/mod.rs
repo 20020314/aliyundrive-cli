@@ -1,7 +1,6 @@
 pub mod model;
 pub mod qr;
 
-use crate::scan::State::{CONFIRMED, EXPIRED, NEW};
 use serde::{de, Deserialize, Deserializer};
 use std::str::FromStr;
 
