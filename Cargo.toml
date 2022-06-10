@@ -19,18 +19,18 @@ anyhow = "1.0"
 log = "0.4.0"
 env_logger = "0.8.4"
 clap = { version = "3.1.18", features = ["cargo"] }
-serde = "1.0.137"
+serde = { version = "1.0.136", features = ["derive"] }
 serde_yaml = "0.8.24"
 lazy_static = "1.4.0"
+chrono = "0.4.9"
+tokio = { version = "1", features = ["full"] }
 
-qrcode = { path = "libs/qrcode" }
-drive = { path = "libs/drive" }
-conf = { path = "libs/conf" }
+qrcode = { path = "src/qrcode" }
+drive = { path = "src/drive" }
 
 [workspace]
 members = [
-    "libs/qrcode",
-    "libs/drive",
-    "libs/conf"
+    "src/qrcode",
+    "src/drive",
 ]
 
