@@ -1,7 +1,7 @@
 use crate::error::QrCodeScannerError;
 use crate::scan::model::{auth, gen, query, suc, CkForm};
 use anyhow::anyhow;
-use reqwest::blocking::Response;
+use reqwest::Response;
 use std::fmt::Debug;
 use std::time;
 
@@ -21,12 +21,12 @@ const SESSION_ID_KEY: &str = "SESSIONID";
 
 pub struct QrCodeScanner {
     session_id: String,
-    client: reqwest::blocking::Client,
+    client: reqwest::Client,
 }
 
 impl QrCodeScanner {
-    pub fn new() -> anyhow::Result<Self> {
-        let client = reqwest::blocking::Client::builder()
+    pub async fn new() -> anyhow::Result<Self> {
+        let client = reqwest::Client::builder()
             .pool_idle_timeout(time::Duration::from_secs(50))
             .connect_timeout(time::Duration::from_secs(10))
             .timeout(time::Duration::from_secs(30))
@@ -34,7 +34,8 @@ impl QrCodeScanner {
         let resp = client
             .get(SESSION_ID_API)
             .header(reqwest::header::USER_AGENT, UA)
-            .send()?;
+            .send()
+            .await?;
         if resp.status().is_success() {
             for cookie in resp.cookies() {
                 if cookie.name() == SESSION_ID_KEY {
@@ -50,18 +51,23 @@ impl QrCodeScanner {
 }
 
 impl QrCodeScanner {
-    pub fn generator(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult> {
-        let resp = self.client.get(GENERATOR_QRCODE_API).send()?;
-        ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp)
+    pub async fn generator(&self) -> crate::ScanResult<gen::GeneratorQrCodeResult> {
+        let resp = self.client.get(GENERATOR_QRCODE_API).send().await?;
+        ResponseHandler::response_handler::<gen::GeneratorQrCodeResult>(resp).await
     }
 
-    pub fn query(&self, from: &impl CkForm) -> crate::ScanResult<query::QueryQrCodeResult> {
+    pub async fn query(&self, from: &impl CkForm) -> crate::ScanResult<query::QueryQrCodeResult> {
         log::debug!("request ck form: {:#?}", from);
-        let resp = self.client.post(QUERY_API).form(&from.map_form()).send()?;
-        ResponseHandler::response_handler::<query::QueryQrCodeResult>(resp)
+        let resp = self
+            .client
+            .post(QUERY_API)
+            .form(&from.map_form())
+            .send()
+            .await?;
+        ResponseHandler::response_handler::<query::QueryQrCodeResult>(resp).await
     }
 
-    pub fn token_login(&self, token: auth::Token) -> crate::ScanResult<suc::GotoResult> {
+    pub async fn token_login(&self, token: auth::Token) -> crate::ScanResult<suc::GotoResult> {
         let resp = self
             .client
             .post(TOKEN_LOGIN_API)
@@ -70,11 +76,12 @@ impl QrCodeScanner {
                 format!("SESSIONID={}", &self.session_id),
             )
             .json(&token)
-            .send()?;
-        ResponseHandler::response_handler::<suc::GotoResult>(resp)
+            .send()
+            .await?;
+        ResponseHandler::response_handler::<suc::GotoResult>(resp).await
     }
 
-    pub fn get_token(
+    pub async fn get_token(
         &self,
         auth: auth::AuthorizationCode,
     ) -> crate::ScanResult<suc::WebLoginResult> {
@@ -86,8 +93,9 @@ impl QrCodeScanner {
                 format!("SESSIONID={}", &self.session_id),
             )
             .json(&auth)
-            .send()?;
-        ResponseHandler::response_handler::<suc::WebLoginResult>(resp)
+            .send()
+            .await?;
+        ResponseHandler::response_handler::<suc::WebLoginResult>(resp).await
     }
 }
 
@@ -95,29 +103,30 @@ struct ResponseHandler;
 
 impl ResponseHandler {
     #[allow(dead_code)]
-    fn response_unit_handler(resp: Response) -> crate::ScanResult<()> {
+    async fn response_unit_handler(resp: Response) -> crate::ScanResult<()> {
         if resp.status().is_success() {
             return Ok(());
         }
-        let msg = ResponseHandler::response_error_msg_handler(resp);
+        let msg = ResponseHandler::response_error_msg_handler(resp).await;
         Err(QrCodeScannerError::from(msg))
     }
 
-    fn response_handler<T: serde::de::DeserializeOwned + Debug>(
+    async fn response_handler<T: serde::de::DeserializeOwned + Debug>(
         resp: Response,
     ) -> crate::ScanResult<T> {
         if resp.status().is_success() {
-            let result = resp.json::<T>()?;
+            let result = resp.json::<T>().await?;
             log::debug!("response result: {:#?}", &result);
             return Ok(result);
         }
-        let msg = ResponseHandler::response_error_msg_handler(resp);
+        let msg = ResponseHandler::response_error_msg_handler(resp).await;
         Err(QrCodeScannerError::from(msg))
     }
 
-    fn response_error_msg_handler(resp: Response) -> String {
+    async fn response_error_msg_handler(resp: Response) -> String {
         let msg = resp
             .text()
+            .await
             .unwrap_or_else(|e| format!("An error occurred while extracting the body: {:?}", e));
         log::debug!(
             "defined in file: {}, defined on line: {}\nmessage: {:?}",

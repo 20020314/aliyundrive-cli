@@ -62,168 +62,126 @@ impl AuthorizationToken for MobileLoginResult {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Default)]
 pub struct PdsLoginResult {
     #[serde(rename = "role")]
-    #[serde(default)]
     role: Option<String>,
 
     #[serde(rename = "userData")]
-    #[serde(default)]
     user_data: Option<UserData>,
 
     #[serde(rename = "isFirstLogin")]
-    #[serde(default)]
     is_first_login: bool,
 
     #[serde(rename = "needLink")]
-    #[serde(default)]
     need_link: bool,
 
     #[serde(rename = "loginType")]
-    #[serde(default)]
     login_type: Option<String>,
 
     #[serde(rename = "nickName")]
-    #[serde(default)]
     nick_name: Option<String>,
 
     #[serde(rename = "needRpVerify")]
-    #[serde(default)]
     need_rp_verify: bool,
 
     #[serde(rename = "avatar")]
-    #[serde(default)]
     avatar: Option<String>,
 
     #[serde(rename = "accessToken")]
-    #[serde(default)]
     access_token: Option<String>,
 
     #[serde(rename = "userName")]
-    #[serde(default)]
     user_name: Option<String>,
 
     #[serde(rename = "userId")]
-    #[serde(default)]
     user_id: Option<String>,
 
     #[serde(rename = "defaultDriveId")]
-    #[serde(default)]
     default_drive_id: Option<String>,
 
     #[serde(rename = "expiresIn")]
-    #[serde(default)]
     expires_in: i64,
 
     #[serde(rename = "expireTime")]
-    #[serde(default)]
     expire_time: Option<String>,
 
     #[serde(rename = "requestId")]
-    #[serde(default)]
     request_id: Option<String>,
 
     #[serde(rename = "dataPinSetup")]
-    #[serde(default)]
     data_pin_setup: bool,
 
     #[serde(rename = "state")]
-    #[serde(default)]
     state: Option<String>,
 
     #[serde(rename = "tokenType")]
-    #[serde(default)]
     token_type: Option<String>,
 
     #[serde(rename = "dataPinSaved")]
-    #[serde(default)]
     data_pin_saved: bool,
 
     #[serde(rename = "refreshToken")]
-    #[serde(default)]
     refresh_token: Option<String>,
 
     #[serde(rename = "status")]
-    #[serde(default)]
     status: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Default)]
 pub struct UserData {
     #[serde(rename = "DingDingRobotUrl")]
-    #[serde(default)]
     ding_ding_robot_url: Option<String>,
 
     #[serde(rename = "FeedBackSwitch")]
-    #[serde(default)]
     feed_back_switch: bool,
 
     #[serde(rename = "FollowingDesc")]
-    #[serde(default)]
     following_desc: Option<String>,
 }
 
 #[derive(Deserialize, Debug, Default)]
 pub struct WebLoginResult {
-    #[serde(default)]
     default_sbox_drive_id: Option<String>,
 
-    #[serde(default)]
     role: Option<String>,
 
-    #[serde(default)]
     user_name: Option<String>,
 
-    #[serde(default)]
     need_link: bool,
 
-    #[serde(default)]
     expire_time: Option<String>,
 
-    #[serde(default)]
     pin_setup: bool,
 
-    #[serde(default)]
     need_rp_verify: bool,
 
-    #[serde(default)]
     avatar: Option<String>,
 
-    #[serde(default)]
     user_data: Option<UserData>,
 
-    #[serde(default)]
     token_type: Option<String>,
 
-    #[serde(default)]
     access_token: Option<String>,
 
-    #[serde(default)]
     default_drive_id: Option<String>,
 
-    #[serde(default)]
     domain_id: Option<String>,
 
-    #[serde(default)]
     refresh_token: Option<String>,
 
-    #[serde(default)]
     is_first_login: bool,
 
-    #[serde(default)]
     user_id: Option<String>,
 
-    #[serde(default)]
     nick_name: Option<String>,
 
-    #[serde(default)]
     state: Option<String>,
 
-    #[serde(default)]
+    // Expiration
     expires_in: i64,
 
-    #[serde(default)]
+    // login status
     status: Option<String>,
 }
 
