@@ -64,7 +64,6 @@ impl AuthorizationToken for MobileLoginResult {
 
 #[derive(Deserialize, Debug, Default)]
 pub struct PdsLoginResult {
-    #[serde(rename = "role")]
     role: Option<String>,
 
     #[serde(rename = "userData")]
@@ -85,7 +84,6 @@ pub struct PdsLoginResult {
     #[serde(rename = "needRpVerify")]
     need_rp_verify: bool,
 
-    #[serde(rename = "avatar")]
     avatar: Option<String>,
 
     #[serde(rename = "accessToken")]
@@ -112,7 +110,6 @@ pub struct PdsLoginResult {
     #[serde(rename = "dataPinSetup")]
     data_pin_setup: bool,
 
-    #[serde(rename = "state")]
     state: Option<String>,
 
     #[serde(rename = "tokenType")]
@@ -124,7 +121,6 @@ pub struct PdsLoginResult {
     #[serde(rename = "refreshToken")]
     refresh_token: Option<String>,
 
-    #[serde(rename = "status")]
     status: Option<String>,
 }
 

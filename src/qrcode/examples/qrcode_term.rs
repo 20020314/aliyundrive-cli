@@ -15,5 +15,5 @@ fn main() {
     println!("{:?}", svg);
 
     // qrcode image write to /tmp/qrcode.png
-    qrcode::qr_image("https://rust-lang.org/", "/tmp/qrcode.png");
+    qrcode::qr_image("https://rust-lang.org/", "/tmp/qrcode.png").unwrap();
 }

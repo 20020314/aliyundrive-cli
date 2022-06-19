@@ -17,7 +17,7 @@ const TOKEN_LOGIN_API: &str = "https://auth.aliyundrive.com/v2/oauth/token_login
 const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
 
 const UA: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36";
-const SESSION_ID_KEY: &str = "SESSIONID";
+const SESSION_ID: &str = "SESSIONID";
 
 pub struct QrCodeScanner {
     session_id: String,
@@ -25,24 +25,30 @@ pub struct QrCodeScanner {
 }
 
 impl QrCodeScanner {
-    pub async fn new() -> anyhow::Result<Self> {
+    pub async fn new() -> anyhow::Result<QrCodeScanner> {
         let client = reqwest::Client::builder()
             .pool_idle_timeout(time::Duration::from_secs(50))
             .connect_timeout(time::Duration::from_secs(10))
             .timeout(time::Duration::from_secs(30))
             .build()?;
-        let resp = client
+
+        Ok(Self {
+            session_id: String::new(),
+            client,
+        })
+    }
+
+    async fn init_session(&self) -> anyhow::Result<String> {
+        let resp = self
+            .client
             .get(SESSION_ID_API)
             .header(reqwest::header::USER_AGENT, UA)
             .send()
             .await?;
         if resp.status().is_success() {
             for cookie in resp.cookies() {
-                if cookie.name() == SESSION_ID_KEY {
-                    return Ok(Self {
-                        session_id: String::from(cookie.value()),
-                        client,
-                    });
+                if cookie.name() == SESSION_ID {
+                    return Ok(String::from(cookie.value()));
                 }
             }
         }
@@ -67,7 +73,10 @@ impl QrCodeScanner {
         ResponseHandler::response_handler::<query::QueryQrCodeResult>(resp).await
     }
 
-    pub async fn token_login(&self, token: auth::Token) -> crate::ScanResult<suc::GotoResult> {
+    pub async fn token_login(&mut self, token: auth::Token) -> crate::ScanResult<suc::GotoResult> {
+        if self.session_id.is_empty() {
+            self.session_id = self.init_session().await?
+        }
         let resp = self
             .client
             .post(TOKEN_LOGIN_API)
@@ -82,9 +91,12 @@ impl QrCodeScanner {
     }
 
     pub async fn get_token(
-        &self,
+        &mut self,
         auth: auth::AuthorizationCode,
     ) -> crate::ScanResult<suc::WebLoginResult> {
+        if self.session_id.is_empty() {
+            self.session_id = self.init_session().await?
+        }
         let resp = self
             .client
             .post(GET_WEB_TOKEN_API)
