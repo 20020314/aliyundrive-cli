@@ -1,5 +1,6 @@
 pub mod rw;
 
+use std::io::Read;
 use anyhow::anyhow;
 use lazy_static::lazy_static;
 use rw::RW;
@@ -39,6 +40,7 @@ impl Config {
             mobile_authorization_token,
         }
     }
+
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
@@ -61,7 +63,7 @@ pub struct Context;
 impl Context {
     pub fn init() -> anyhow::Result<()> {
         // work dir not exists
-        let p = WORK_DIR_PATH.expect("Initialize aliyundrive directory");
+        let p = WORK_DIR_PATH.expect("Initialize aliyundrive directory error");
         if !p.exists() {
             std::fs::create_dir(p)?;
             log::debug!("Initialize aliyundrive directory: {}", p.display())
@@ -87,6 +89,14 @@ impl Context {
 }
 
 impl RW<Config, AuthorizationToken> for Context {
+    fn print_std() {
+        let p = CONFIG_FILE_PATH.expect("Initialize aliyundrive directory error");
+        let mut f = std::fs::File::open(p).expect("Failed to read configuration");
+        let mut  config_str = String::new();
+        f.read_to_string(&mut config_str).expect("Read configuration error!");
+        print!("{}", config_str)
+    }
+
     fn write(t: Config) -> serde_yaml::Result<()> {
         let p = CONFIG_FILE_PATH.expect("Initialize config file error");
         let f = std::fs::File::options()
@@ -97,7 +107,7 @@ impl RW<Config, AuthorizationToken> for Context {
     }
 
     fn read() -> serde_yaml::Result<Config> {
-        let p = CONFIG_FILE_PATH.expect("Initialize aliyundrive directory");
+        let p = CONFIG_FILE_PATH.expect("Initialize aliyundrive directory error");
         let f = std::fs::File::open(p).expect("Failed to read configuration");
         serde_yaml::from_reader::<std::fs::File, Config>(f)
     }

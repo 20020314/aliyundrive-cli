@@ -5,6 +5,8 @@ where
     T1: ser::Serialize,
     T2: ser::Serialize,
 {
+    fn print_std();
+
     fn write(t: T1) -> serde_yaml::Result<()>;
 
     fn read() -> serde_yaml::Result<T1>;
