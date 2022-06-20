@@ -1,10 +1,10 @@
 pub mod rw;
 
-use std::io::Read;
 use anyhow::anyhow;
 use lazy_static::lazy_static;
 use rw::RW;
 use serde::{Deserialize, Serialize};
+use std::io::Read;
 use std::path::PathBuf;
 
 lazy_static! {
@@ -40,7 +40,6 @@ impl Config {
             mobile_authorization_token,
         }
     }
-
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
@@ -92,8 +91,9 @@ impl RW<Config, AuthorizationToken> for Context {
     fn print_std() {
         let p = CONFIG_FILE_PATH.expect("Initialize aliyundrive directory error");
         let mut f = std::fs::File::open(p).expect("Failed to read configuration");
-        let mut  config_str = String::new();
-        f.read_to_string(&mut config_str).expect("Read configuration error!");
+        let mut config_str = String::new();
+        f.read_to_string(&mut config_str)
+            .expect("Read configuration error!");
         print!("{}", config_str)
     }
 
