@@ -24,8 +24,8 @@ impl GeneratorQrCodeResult {
         }
     }
 
-    pub fn get_content(&self) -> Option<GeneratorQrCodeContent> {
-        self.content.as_ref().cloned()
+    pub fn get_content(&self) -> Option<&GeneratorQrCodeContent> {
+        self.content.as_ref()
     }
 
     pub fn get_qrcode_content(&self) -> String {

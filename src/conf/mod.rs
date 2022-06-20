@@ -30,10 +30,10 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(p1: Option<AuthorizationToken>, p2: Option<AuthorizationToken>) -> Self {
+    pub fn new(web_authorization_token: Option<AuthorizationToken>, mobile_authorization_token: Option<AuthorizationToken>) -> Self {
         Self {
-            web_authorization_token: p1,
-            mobile_authorization_token: p2,
+            web_authorization_token,
+            mobile_authorization_token
         }
     }
 }
@@ -45,10 +45,10 @@ pub struct AuthorizationToken {
 }
 
 impl AuthorizationToken {
-    pub fn new(access_token: String, refresh_token: String) -> Self {
+    pub fn new(access_token: Option<String>, refresh_token: Option<String>) -> Self {
         Self {
-            access_token: Some(access_token),
-            refresh_token: Some(refresh_token),
+            access_token,
+            refresh_token,
         }
     }
 }
@@ -139,8 +139,8 @@ mod tests {
         let read_config = Context::read().unwrap();
         println!("{:?}", read_config);
 
-        let p1 = AuthorizationToken::new(String::from("a1"), String::from("a2"));
-        let p2 = AuthorizationToken::new(String::from("a3"), String::from("a4"));
+        let p1 = AuthorizationToken::new(Some(String::from("a1")), Some(String::from("a2")));
+        let p2 = AuthorizationToken::new(Some(String::from("a3")), Some(String::from("a4")));
         let config = Config::new(Some(p1), Some(p2));
         Context::write(config).unwrap();
         let read_config = Context::read().unwrap();
@@ -151,8 +151,8 @@ mod tests {
         let t2 = Context::read_token(true).unwrap();
         println!("{:?}", t2);
 
-        let p3 = AuthorizationToken::new(String::from("a5"), String::from("a6"));
-        let p4 = AuthorizationToken::new(String::from("a7"), String::from("a8"));
+        let p3 = AuthorizationToken::new(Some(String::from("a5")), Some(String::from("a6")));
+        let p4 = AuthorizationToken::new(Some(String::from("a7")), Some(String::from("a8")));
         Context::write_token(false, p3).unwrap();
         Context::write_token(true, p4).unwrap();
 

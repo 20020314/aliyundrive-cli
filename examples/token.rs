@@ -8,13 +8,13 @@ use drive::scan::qr::QrCodeScanner;
 
 #[tokio::main]
 async fn main() {
-    let scan = QrCodeScanner::new().await.unwrap();
+    let mut scan = QrCodeScanner::new().await.unwrap();
     let generator_result = scan.generator().await.unwrap();
     qrcode::qr_print(generator_result.get_qrcode_content()).expect("print qrcode error.");
-    let ck_form = QueryQrCodeCkForm::from(generator_result);
+    let form = QueryQrCodeCkForm::from(generator_result);
     for _i in 0..10 {
         tokio::time::sleep(time::Duration::from_secs(3)).await;
-        let query_result = scan.query(&ck_form).await.unwrap();
+        let query_result = scan.query(&form).await.unwrap();
         if query_result.ok() {
             // query_result.is_new() 表示未扫码状态
             if query_result.is_new() {
