@@ -1,14 +1,14 @@
 mod conf;
 mod handler;
 
-use std::io::Write;
+use crate::conf::rw::RW;
+use anyhow::Context;
 use clap::{Parser, Subcommand};
-use crate::conf::Context;
+use std::io::Write;
 
 #[derive(Parser, Debug)]
 #[clap(author = "<gngpp verticle@foxmail.com>", version, about = "Alibaba Cloud Disk Terminal CLI Tool", long_about = None, arg_required_else_help = true)]
 pub struct CLI {
-
     /// Enable debug mode
     #[clap(short, long)]
     debug: bool,
@@ -30,13 +30,11 @@ enum Commands {
         web_token: bool,
         /// Save the login token to a file
         #[clap(long, short, requires = "token")]
-        sava: bool
+        sava: bool,
     },
     /// Sets a custom config file
     #[clap(arg_required_else_help = true)]
-    CONFIG {
-
-    }
+    CONFIG {},
 }
 
 #[tokio::main]
@@ -49,16 +47,23 @@ async fn main() -> anyhow::Result<()> {
         Some(Commands::QRCODE {
             web_token,
             mobile_token,
-            sava
+            sava,
         }) => {
             // qrcode scan
             if *web_token || *mobile_token {
-                handler::qrcode_token_handler(*web_token, *mobile_token, *sava).await?
+                let refresh_token =
+                    handler::qrcode_token_handler(*web_token, *mobile_token).await?;
+                // Sava the authorization token to config file
+                if *sava {
+                    conf::Context::init()?;
+                    let authorization_token =
+                        conf::AuthorizationToken::new(None, Some(refresh_token));
+                    conf::Context::write_token(*mobile_token, authorization_token)
+                        .context("Failed to save configuration!")?
+                }
             }
         }
-        Some(Commands::CONFIG {}) => {
-            Context::init()?;
-        }
+        Some(Commands::CONFIG {}) => {}
         None => {}
     }
 

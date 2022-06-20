@@ -1,15 +1,13 @@
-use anyhow::{Context};
+use anyhow::Context;
 use drive::scan;
 use drive::scan::model::auth::{AuthorizationCode, Token};
 use drive::scan::model::query::QueryQrCodeCkForm;
 use drive::scan::model::{AuthorizationToken, Ok};
-use crate::conf::rw::RW;
 
 pub(crate) async fn qrcode_token_handler(
     web_token: bool,
     mobile_token: bool,
-    sava: bool
-) -> anyhow::Result<()> {
+) -> anyhow::Result<String> {
     if web_token || mobile_token {
         let mut scan = scan::qr::QrCodeScanner::new().await?;
         // Return QR code content result set
@@ -44,13 +42,14 @@ pub(crate) async fn qrcode_token_handler(
                     let mobile_refresh_token = mobile_login_result
                         .refresh_token()
                         .context("failed to get mobile refresh token")?;
-                    if mobile_token || (!web_token){
+                    if mobile_token || (!web_token) {
                         log::info!("mobile-refresh_token: {}\n", mobile_refresh_token);
-                        return Ok(());
+                        return Ok(mobile_refresh_token);
                     }
 
                     let web_refresh_token = if web_token {
-                        let access_token = mobile_login_result.access_token()
+                        let access_token = mobile_login_result
+                            .access_token()
                             .context("failed to get web access token")?;
                         let goto_result = scan.token_login(Token::from(&access_token)).await?;
                         let web_login_result = scan
@@ -62,20 +61,12 @@ pub(crate) async fn qrcode_token_handler(
                             .refresh_token()
                             .context("failed to get web refresh token")?;
                         log::info!("web-refresh_token: {}\n", refresh_token);
-                        Some(refresh_token)
+                        refresh_token
                     } else {
-                        None
+                        anyhow::bail!("failed to get web refresh token")
                     };
 
-                    if sava {
-                        crate::Context::init()?;
-                        let web_authorization_token = crate::conf::AuthorizationToken::new(None, web_refresh_token);
-                        let mobile_authorization_token = crate::conf::AuthorizationToken::new(None, Some(mobile_refresh_token));
-                        let config = crate::conf::Config::new(Some(web_authorization_token), Some(mobile_authorization_token));
-                        crate::Context::write(config)
-                            .context("Failed to save configuration!")?
-                    }
-                    return Ok(());
+                    return Ok(web_refresh_token);
                 }
             }
         }

@@ -30,10 +30,13 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(web_authorization_token: Option<AuthorizationToken>, mobile_authorization_token: Option<AuthorizationToken>) -> Self {
+    pub fn new(
+        web_authorization_token: Option<AuthorizationToken>,
+        mobile_authorization_token: Option<AuthorizationToken>,
+    ) -> Self {
         Self {
             web_authorization_token,
-            mobile_authorization_token
+            mobile_authorization_token,
         }
     }
 }
