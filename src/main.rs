@@ -34,7 +34,11 @@ enum Commands {
     },
     /// Sets a custom config file
     #[clap(arg_required_else_help = true)]
-    CONFIG {},
+    CONFIG {
+        /// Print configuration
+        #[clap(short, long)]
+        cat: bool,
+    },
 }
 
 #[tokio::main]
@@ -63,7 +67,12 @@ async fn main() -> anyhow::Result<()> {
                 }
             }
         }
-        Some(Commands::CONFIG {}) => {}
+        Some(Commands::CONFIG { cat }) => {
+            if *cat {
+                conf::Context::init()?;
+                conf::Context::print_std();
+            }
+        }
         None => {}
     }
 
