@@ -1,59 +1,76 @@
 mod conf;
 mod handler;
 
-use clap::{arg, Arg, Command};
 use std::io::Write;
-
-use std::path::PathBuf;
-
 use clap::{Parser, Subcommand};
+use crate::conf::Context;
 
-#[derive(Parser)]
+#[derive(Parser, Debug)]
 #[clap(author = "<gngpp verticle@foxmail.com>", version, about = "Alibaba Cloud Disk Terminal CLI Tool", long_about = None, arg_required_else_help = true)]
 pub struct CLI {
-    /// Sets a custom config file
-    #[clap(short = 'c', long, value_name = "FILE")]
-    config: Option<PathBuf>,
 
     /// Enable debug mode
-    #[clap(short = 'd', long)]
+    #[clap(short, long)]
     debug: bool,
 
     #[clap(subcommand)]
-    command: Option<Commands>,
+    commands: Option<Commands>,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 enum Commands {
     /// Scan the qrcode to log in to obtain token or other information
     #[clap(arg_required_else_help = true)]
     QRCODE {
-        /// Mobile QR Code scan code login
-        #[clap(long)]
+        /// Mobile QRCode scan code login
+        #[clap(long, short, group = "token")]
         mobile_token: bool,
-
-        /// Web QR Code scan code login
-        #[clap(long)]
+        /// Web QRCode scan code login
+        #[clap(long, short, group = "token")]
         web_token: bool,
+        /// Save the login token to a file
+        #[clap(long, short, requires = "token")]
+        sava: bool
     },
+    /// Sets a custom config file
+    #[clap(arg_required_else_help = true)]
+    CONFIG {
+
+    }
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let cli = CLI::parse();
-    if cli.debug {
-        std::env::set_var("RUST_LOG", "DEBUG");
-        log::debug!("debug log")
-    }
-    init_log();
-    if let Some(config_path) = cli.config.as_deref() {
-        println!("Value for config: {}", config_path.display());
+    // enabled debug mode
+    init_log(cli.debug);
+    // subcommands
+    match &cli.commands {
+        Some(Commands::QRCODE {
+            web_token,
+            mobile_token,
+            sava
+        }) => {
+            // qrcode scan
+            if *web_token || *mobile_token {
+                handler::qrcode_token_handler(*web_token, *mobile_token, *sava).await?
+            }
+        }
+        Some(Commands::CONFIG {}) => {
+            Context::init()?;
+        }
+        None => {}
     }
 
     Ok(())
 }
 
-fn init_log() {
+fn init_log(debug: bool) {
+    if debug {
+        std::env::set_var("RUST_LOG", "DEBUG");
+    } else {
+        std::env::set_var("RUST_LOG", "INFO");
+    }
     env_logger::builder()
         .format(|buf, record| {
             writeln!(
