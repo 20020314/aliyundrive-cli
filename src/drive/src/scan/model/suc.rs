@@ -6,12 +6,12 @@ use reqwest::Url;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
-pub struct GotoResult {
+pub struct GotoResponse {
     #[serde(default)]
     goto: Option<String>,
 }
 
-impl<'a> From<&'a String> for GotoResult {
+impl<'a> From<&'a String> for GotoResponse {
     fn from(token: &String) -> Self {
         Self {
             goto: Some(token.to_string()),
@@ -19,7 +19,7 @@ impl<'a> From<&'a String> for GotoResult {
     }
 }
 
-impl GotoResult {
+impl GotoResponse {
     pub fn extract_authorization_code(&self) -> anyhow::Result<String> {
         let goto = self.goto.as_ref().ok_or(anyhow!("goto value is None"))?;
         let url = Url::parse(goto.as_str())?;
@@ -38,17 +38,17 @@ impl GotoResult {
                 return Ok(String::from(*value));
             }
         }
-        Err(anyhow!("Failed to get authorization code"))
+        anyhow::bail!("Failed to get authorization code")
     }
 }
 
 #[derive(Deserialize, Debug)]
-pub struct MobileLoginResult {
+pub struct MobileLoginResponse {
     #[serde(default)]
     pds_login_result: Option<PdsLoginResult>,
 }
 
-impl AuthorizationToken for MobileLoginResult {
+impl AuthorizationToken for MobileLoginResponse {
     fn access_token(&self) -> Option<String> {
         let pds_login_result = self.pds_login_result.as_ref()?;
         let access_token = pds_login_result.access_token.as_ref()?;
@@ -137,7 +137,7 @@ pub struct UserData {
 }
 
 #[derive(Deserialize, Debug, Default)]
-pub struct WebLoginResult {
+pub struct WebLoginResponse {
     default_sbox_drive_id: Option<String>,
 
     role: Option<String>,
@@ -181,7 +181,13 @@ pub struct WebLoginResult {
     status: Option<String>,
 }
 
-impl AuthorizationToken for WebLoginResult {
+impl WebLoginResponse {
+    pub fn get_drive_id(self) -> Option<String> {
+        self.default_drive_id
+    }
+}
+
+impl AuthorizationToken for WebLoginResponse {
     fn access_token(&self) -> Option<String> {
         self.access_token.as_ref().cloned()
     }
@@ -189,4 +195,15 @@ impl AuthorizationToken for WebLoginResult {
     fn refresh_token(&self) -> Option<String> {
         self.refresh_token.as_ref().cloned()
     }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RefreshTokenResponse {
+    pub access_token: String,
+    pub refresh_token: String,
+    pub expires_in: u64,
+    pub token_type: String,
+    pub user_id: String,
+    pub nick_name: String,
+    pub default_drive_id: String,
 }

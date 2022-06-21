@@ -1,13 +1,13 @@
 #![allow(dead_code)]
 
-use crate::scan::model::gen::GeneratorQrCodeResult;
+use crate::scan::model::gen::GeneratorQrCodeResponse;
 use crate::scan::model::{suc, CkForm, Ok};
 use crate::scan::State;
 use serde::{Deserialize, Serialize};
 
 // query qrcode scan status
 #[derive(Debug, Deserialize)]
-pub struct QueryQrCodeResult {
+pub struct QueryQrCodeResponse {
     #[serde(default)]
     #[serde(rename = "content")]
     content: Option<QueryQrCodeContent>,
@@ -17,7 +17,7 @@ pub struct QueryQrCodeResult {
     has_error: bool,
 }
 
-impl QueryQrCodeResult {
+impl QueryQrCodeResponse {
     #[allow(dead_code)]
     pub fn new() -> Self {
         Self {
@@ -26,11 +26,11 @@ impl QueryQrCodeResult {
         }
     }
 
-    pub fn get_mobile_login_result(&self) -> Option<suc::MobileLoginResult> {
+    pub fn get_mobile_login_result(&self) -> Option<suc::MobileLoginResponse> {
         let biz_ext = self.get_biz_ext()?;
         let vec = base64::decode(biz_ext).unwrap();
         let string = vec.iter().map(|&c| c as char).collect::<String>();
-        serde_json::from_str::<suc::MobileLoginResult>(string.as_str()).ok()
+        serde_json::from_str::<suc::MobileLoginResponse>(string.as_str()).ok()
     }
 
     fn get_biz_ext(&self) -> Option<String> {
@@ -48,7 +48,7 @@ impl QueryQrCodeResult {
     }
 }
 
-impl Ok for QueryQrCodeResult {
+impl Ok for QueryQrCodeResponse {
     fn ok(&self) -> bool {
         if let Some(ref t) = self.content {
             return !self.has_error && t.success;
@@ -57,7 +57,7 @@ impl Ok for QueryQrCodeResult {
     }
 }
 
-impl QueryQrCodeResult {
+impl QueryQrCodeResponse {
     pub fn is_new(&self) -> bool {
         if let Some(ref state) = self.get_status() {
             if State::New.eq(state) {
@@ -168,8 +168,8 @@ impl QueryQrCodeCkForm {
     }
 }
 
-impl From<GeneratorQrCodeResult> for QueryQrCodeCkForm {
-    fn from(from: GeneratorQrCodeResult) -> Self {
+impl From<GeneratorQrCodeResponse> for QueryQrCodeCkForm {
+    fn from(from: GeneratorQrCodeResponse) -> Self {
         if let Some(ref content) = from.get_content() {
             if let Some(ref data) = content.get_data() {
                 let ck = match data.get_ck() {

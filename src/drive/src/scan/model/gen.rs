@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 // build qrcode result
 #[derive(Debug, Deserialize)]
-pub struct GeneratorQrCodeResult {
+pub struct GeneratorQrCodeResponse {
     #[serde(default)]
     #[serde(rename = "content")]
     content: Option<GeneratorQrCodeContent>,
@@ -15,7 +15,7 @@ pub struct GeneratorQrCodeResult {
     has_error: bool,
 }
 
-impl GeneratorQrCodeResult {
+impl GeneratorQrCodeResponse {
     #[allow(dead_code)]
     fn new() -> Self {
         Self {
@@ -42,7 +42,7 @@ impl GeneratorQrCodeResult {
     }
 }
 
-impl Ok for GeneratorQrCodeResult {
+impl Ok for GeneratorQrCodeResponse {
     fn ok(&self) -> bool {
         if let Some(ref t) = self.content {
             return !self.has_error && t.success;

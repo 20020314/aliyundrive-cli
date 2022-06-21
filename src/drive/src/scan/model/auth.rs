@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use crate::scan::model::suc::GotoResult;
+use crate::scan::model::suc::GotoResponse;
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
@@ -28,8 +28,8 @@ pub struct AuthorizationCode {
     login_type: Option<String>,
 }
 
-impl From<&GotoResult> for AuthorizationCode {
-    fn from(from: &GotoResult) -> Self {
+impl From<&GotoResponse> for AuthorizationCode {
+    fn from(from: &GotoResponse) -> Self {
         let code = from.extract_authorization_code();
         match code {
             Ok(code) => {

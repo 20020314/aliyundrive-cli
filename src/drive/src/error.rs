@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
 
@@ -6,11 +7,11 @@ pub struct DriveError {
     message: String,
 }
 
-impl std::error::Error for DriveError {}
+impl Error for DriveError {}
 
 impl Display for DriveError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.message)
+        write!(f, "kind:{}\nmessage:{},", self.kind, self.message)
     }
 }
 
@@ -23,11 +24,20 @@ impl Debug for DriveError {
     }
 }
 
-impl From<Box<dyn std::error::Error>> for DriveError {
-    fn from(err: Box<dyn std::error::Error>) -> Self {
+impl From<Box<dyn Error>> for DriveError {
+    fn from(err: Box<dyn Error>) -> Self {
         Self {
             kind: String::from("reqwest"),
             message: err.to_string(),
+        }
+    }
+}
+
+impl From<reqwest::Error> for DriveError {
+    fn from(e: reqwest::Error) -> Self {
+        Self {
+            kind: String::from("reqwest"),
+            message: e.to_string(),
         }
     }
 }
@@ -46,7 +56,7 @@ impl Debug for QrCodeScannerError {
 
 impl Display for QrCodeScannerError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "Message: {}", self.message)
+        write!(f, "message: {}", self.message)
     }
 }
 
