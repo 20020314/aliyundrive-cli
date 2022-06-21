@@ -5,7 +5,6 @@ use crate::conf::rw::RW;
 use anyhow::Context;
 use clap::{Parser, Subcommand};
 use std::io::Write;
-use std::time;
 
 #[derive(Parser, Debug)]
 #[clap(author = "<gngpp verticle@foxmail.com>", version, about = "Alibaba Cloud Disk Terminal CLI Tool", long_about = None, arg_required_else_help = true)]
