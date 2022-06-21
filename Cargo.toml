@@ -21,6 +21,7 @@ serde_yaml = "0.8.24"
 lazy_static = "1.4.0"
 chrono = "0.4.9"
 tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread"] }
+reqwest = { version = "0.11.10", default-features = false, features = ["json", "cookies", "gzip", "rustls-tls"] }
 
 qrcode = { path = "src/qrcode" }
 drive = { path = "src/drive" }
