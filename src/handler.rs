@@ -11,31 +11,31 @@ pub(crate) async fn qrcode_token_handler(
     if web_token || mobile_token {
         let mut scan = scan::qr::QrCodeScanner::new().await?;
         // Return QR code content result set
-        let generator_result = scan.generator().await?;
+        let generator_response = scan.generator().await?;
         // Content that needs to generate a QR code
-        let qrcode_content = generator_result.get_qrcode_content();
-        let ck_form = QueryQrCodeCkForm::from(generator_result);
+        let qrcode_content = generator_response.get_qrcode_content();
+        let ck_form = QueryQrCodeCkForm::from(generator_response);
         // print QRCode
         qrcode::qr_print(&qrcode_content)?;
         log::info!("Please scan the qrcode to login in 30 seconds");
         for _i in 0..10 {
             tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
             // Simulate rotation training to query QRCode status
-            let query_result = scan.query(&ck_form).await?;
-            if query_result.ok() {
+            let query_response = scan.query(&ck_form).await?;
+            if query_response.ok() {
                 // Indicates new status
-                if query_result.is_new() {
+                if query_response.is_new() {
                     continue;
                 }
                 // Indicates that the scan code was successful, but did not click to confirm the login
-                if query_result.is_expired() {
+                if query_response.is_expired() {
                     log::debug!("login expired");
                     continue;
                 }
                 // The mobile APP scans the code successfully and confirms the login
-                if query_result.is_confirmed() {
+                if query_response.is_confirmed() {
                     // Get the mobile login Result
-                    let mobile_login_result = query_result
+                    let mobile_login_result = query_response
                         .get_mobile_login_result()
                         .context("failed to get mobile login result")?;
                     // Mobile refresh token
