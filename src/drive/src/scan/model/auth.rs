@@ -19,7 +19,6 @@ impl From<&String> for Token {
 
 #[derive(Serialize, Debug)]
 pub struct AuthorizationCode {
-    #[serde(rename = "code")]
     #[serde(default)]
     code: Option<String>,
 

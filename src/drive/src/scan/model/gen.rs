@@ -7,7 +7,6 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct GeneratorQrCodeResponse {
     #[serde(default)]
-    #[serde(rename = "content")]
     content: Option<GeneratorQrCodeContent>,
 
     #[serde(rename = "hasError")]
@@ -54,14 +53,11 @@ impl Ok for GeneratorQrCodeResponse {
 #[derive(Debug, Deserialize, Clone)]
 pub struct GeneratorQrCodeContent {
     #[serde(default)]
-    #[serde(rename = "data")]
     data: Option<GeneratorQrCodeContentData>,
 
-    #[serde(rename = "status")]
     #[serde(default)]
     status: i32,
 
-    #[serde(rename = "success")]
     #[serde(default)]
     success: bool,
 }
@@ -74,7 +70,6 @@ impl GeneratorQrCodeContent {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct GeneratorQrCodeContentData {
-    #[serde(rename = "t")]
     #[serde(default)]
     t: i64,
 
@@ -83,7 +78,6 @@ pub struct GeneratorQrCodeContentData {
     code_content: Option<String>,
 
     #[serde(default)]
-    #[serde(rename = "ck")]
     ck: Option<String>,
 
     #[serde(default)]

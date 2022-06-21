@@ -123,7 +123,7 @@ impl ResponseHandler {
     ) -> ScanResult<T> {
         if resp.status().is_success() {
             let result = resp.json::<T>().await?;
-            log::debug!("response result: {:#?}", &result);
+            log::debug!("response result: {:#?}", result);
             return Ok(result);
         }
         let msg = ResponseHandler::response_error_msg_handler(resp).await;

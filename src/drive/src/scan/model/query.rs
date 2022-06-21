@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize)]
 pub struct QueryQrCodeResponse {
     #[serde(default)]
-    #[serde(rename = "content")]
     content: Option<QueryQrCodeContent>,
 
     #[serde(default)]
@@ -88,7 +87,7 @@ impl QueryQrCodeResponse {
 
 #[derive(Debug, Deserialize)]
 pub struct QueryQrCodeContent {
-    #[serde(rename = "data")]
+    #[serde(default)]
     data: Option<QueryQrCodeContentData>,
 
     #[serde(default)]
@@ -120,7 +119,6 @@ pub struct QueryQrCodeContentData {
     login_suc_result_action: Option<String>,
 
     #[serde(default)]
-    #[serde(rename = "st")]
     st: Option<String>,
 
     #[serde(default)]
