@@ -1,13 +1,13 @@
-use std::collections::HashMap;
 use anyhow::Context;
+use drive::model::ClientType;
+use drive::scan::model::suc::RefreshTokenResponse;
 use reqwest::StatusCode;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use drive::model::ClientType;
-use drive::scan::model::suc::RefreshTokenResponse;
+use std::collections::HashMap;
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()>{
+async fn main() -> anyhow::Result<()> {
     let result = list_all("root").await?;
     println!("{:#?}", result);
     Ok(())
@@ -45,9 +45,12 @@ pub async fn list(
         order_direction: "DESC",
         marker,
     };
-    request(String::from("https://api.aliyundrive.com/v2/file/list"), &req)
-        .await
-        .and_then(|res| res.context("expect response"))
+    request(
+        String::from("https://api.aliyundrive.com/v2/file/list"),
+        &req,
+    )
+    .await
+    .and_then(|res| res.context("expect response"))
 }
 
 async fn request<T, U>(url: String, req: &T) -> anyhow::Result<Option<U>>

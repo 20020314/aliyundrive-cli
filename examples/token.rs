@@ -1,8 +1,7 @@
 extern crate core;
 
 use core::time;
-use std::borrow::Borrow;
-use drive::scan::model::auth::{AuthorizationCode, Token};
+use drive::scan::model::auth::MobileAccessToken;
 use drive::scan::model::query::QueryQrCodeCkForm;
 use drive::scan::model::{AuthorizationToken, Ok};
 use drive::scan::qr::QrCodeScanner;
@@ -10,12 +9,12 @@ use drive::scan::qr::QrCodeScanner;
 #[tokio::main]
 async fn main() {
     let mut scan = QrCodeScanner::new().await.unwrap();
-    let generator_response = scan.generator().await.unwrap();
+    let generator_response = scan.qrcode_generator().await.unwrap();
     qrcode::qr_print(generator_response.get_qrcode_content()).expect("print qrcode error.");
     let form = QueryQrCodeCkForm::from(generator_response);
     for _i in 0..10 {
         tokio::time::sleep(time::Duration::from_secs(3)).await;
-        let query_response = scan.query(&form).await.unwrap();
+        let query_response = scan.do_get_mobile_response(&form).await.unwrap();
         if query_response.ok() {
             // query_result.is_new() 表示未扫码状态
             if query_response.is_new() {
@@ -40,14 +39,8 @@ async fn main() {
                 let refresh_token = mobile_login_response.refresh_token().unwrap();
                 println!("mobile_login_result-refresh_token: {}\n", refresh_token);
 
-                let goto_response = scan.token_login(Token::from(&access_token)).await.unwrap();
-                println!("goto result: {:#?}\n", goto_response);
-
-                let authorization_code = goto_response.extract_authorization_code().unwrap();
-                println!("authorization_code: {}", authorization_code);
-
                 let web_login_response = scan
-                    .get_token(AuthorizationCode::from(&goto_response))
+                    .do_get_web_token_response(MobileAccessToken::from(&access_token))
                     .await
                     .unwrap();
                 println!("web_login_result: {:#?}", web_login_response);
