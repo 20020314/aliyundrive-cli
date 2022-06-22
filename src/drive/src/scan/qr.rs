@@ -77,15 +77,15 @@ impl QrCodeScanner {
         &mut self,
         token: auth::MobileAccessToken,
     ) -> ScanResult<suc::WebLoginResponse> {
-        let session = self.session.read().await;
-        let session_value = if session.is_empty() {
-            let mut rw_session = self.session.write().await;
+        let mut rw_session = self.session.write().await;
+        let session_value = if rw_session.is_empty() {
             let session_value = self.init_session().await?;
             rw_session.push_str(session_value.as_str());
-            session_value
+            rw_session.to_string()
         } else {
-            String::from(session.as_str())
+            rw_session.to_string()
         };
+        log::debug!("session value: {}", session_value);
         let resp = self
             .client
             .post(TOKEN_LOGIN_API)
