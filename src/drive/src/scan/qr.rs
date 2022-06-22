@@ -59,7 +59,7 @@ impl QrCodeScanner {
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResponse>(resp).await
     }
 
-    pub async fn do_get_mobile_response(
+    pub async fn do_get_query_response(
         &self,
         from: &impl CkForm,
     ) -> ScanResult<query::QueryQrCodeResponse> {
@@ -90,6 +90,7 @@ impl QrCodeScanner {
             .send()
             .await?;
         let goto_response = ResponseHandler::response_handler::<suc::GotoResponse>(resp).await?;
+        log::debug!("goto response: {:#?}", goto_response);
         let authorization_code = auth::AuthorizationCode::from(goto_response);
         log::debug!("authorization code {:#?}", authorization_code);
         self.get_web_token(authorization_code).await

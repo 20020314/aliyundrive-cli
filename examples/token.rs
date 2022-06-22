@@ -14,7 +14,7 @@ async fn main() {
     let form = QueryQrCodeCkForm::from(generator_response);
     for _i in 0..10 {
         tokio::time::sleep(time::Duration::from_secs(3)).await;
-        let query_response = scan.do_get_mobile_response(&form).await.unwrap();
+        let query_response = scan.do_get_query_response(&form).await.unwrap();
         if query_response.ok() {
             // query_result.is_new() 表示未扫码状态
             if query_response.is_new() {
