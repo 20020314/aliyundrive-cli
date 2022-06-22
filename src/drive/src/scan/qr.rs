@@ -4,6 +4,8 @@ use crate::scan::model::{auth, gen, query, suc, CkForm};
 use crate::ScanResult;
 use reqwest::Response;
 use std::fmt::Debug;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 // generator qrcode
 const GENERATOR_QRCODE_API: &str = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do?appName=aliyun_drive&fromSite=52&appEntrance=web";
@@ -19,7 +21,7 @@ const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
 const SESSION_ID: &str = "SESSIONID";
 
 pub struct QrCodeScanner {
-    session_id: String,
+    session: Arc<RwLock<String>>,
     client: reqwest::Client,
 }
 
@@ -33,7 +35,7 @@ impl QrCodeScanner {
             .build()?;
 
         Ok(Self {
-            session_id: String::new(),
+            session: Arc::new(RwLock::new(String::new())),
             client,
         })
     }
@@ -52,12 +54,15 @@ impl QrCodeScanner {
 }
 
 impl QrCodeScanner {
-    pub async fn generator(&self) -> ScanResult<gen::GeneratorQrCodeResponse> {
+    pub async fn qrcode_generator(&self) -> ScanResult<gen::GeneratorQrCodeResponse> {
         let resp = self.client.get(GENERATOR_QRCODE_API).send().await?;
         ResponseHandler::response_handler::<gen::GeneratorQrCodeResponse>(resp).await
     }
 
-    pub async fn query(&self, from: &impl CkForm) -> ScanResult<query::QueryQrCodeResponse> {
+    pub async fn do_get_mobile_response(
+        &self,
+        from: &impl CkForm,
+    ) -> ScanResult<query::QueryQrCodeResponse> {
         log::debug!("request ck form: {:#?}", from);
         let resp = self
             .client
@@ -68,38 +73,37 @@ impl QrCodeScanner {
         ResponseHandler::response_handler::<query::QueryQrCodeResponse>(resp).await
     }
 
-    pub async fn token_login(&mut self, token: auth::Token) -> ScanResult<suc::GotoResponse> {
-        if self.session_id.is_empty() {
-            self.session_id = self.init_session().await?
+    pub async fn do_get_web_token_response(
+        &mut self,
+        token: auth::MobileAccessToken,
+    ) -> ScanResult<suc::WebLoginResponse> {
+        if self.session.read().await.is_empty() {
+            let mut rw_session = self.session.write().await;
+            let session_value = self.init_session().await?;
+            rw_session.push_str(session_value.as_str())
         }
         let resp = self
             .client
             .post(TOKEN_LOGIN_API)
-            .header(
-                reqwest::header::COOKIE,
-                format!("SESSIONID={}", &self.session_id),
-            )
+            .header(reqwest::header::COOKIE, format!("SESSIONID={}", ""))
             .json(&token)
             .send()
             .await?;
-        ResponseHandler::response_handler::<suc::GotoResponse>(resp).await
+        let goto_response = ResponseHandler::response_handler::<suc::GotoResponse>(resp).await?;
+        let authorization_code = auth::AuthorizationCode::from(goto_response);
+        log::debug!("authorization code {:#?}", authorization_code);
+        self.get_web_token(authorization_code).await
     }
 
-    pub async fn get_token(
+    async fn get_web_token(
         &mut self,
-        auth: auth::AuthorizationCode,
-    ) -> crate::ScanResult<suc::WebLoginResponse> {
-        if self.session_id.is_empty() {
-            self.session_id = self.init_session().await?
-        }
+        authorization_code: auth::AuthorizationCode,
+    ) -> ScanResult<suc::WebLoginResponse> {
         let resp = self
             .client
             .post(GET_WEB_TOKEN_API)
-            .header(
-                reqwest::header::COOKIE,
-                format!("SESSIONID={}", &self.session_id),
-            )
-            .json(&auth)
+            .header(reqwest::header::COOKIE, format!("SESSIONID={}", ""))
+            .json(&authorization_code)
             .send()
             .await?;
         ResponseHandler::response_handler::<suc::WebLoginResponse>(resp).await

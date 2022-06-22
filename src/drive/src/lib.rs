@@ -1,17 +1,17 @@
-use serde::{Deserialize, Deserializer};
 use crate::error::{DriveError, QrCodeScannerError};
 use crate::r#const::{REQUEST_CONNECT_TIMEOUT, REQUEST_POOL_IDLE_TIMEOUT, REQUEST_TIMEOUT, UA};
+use serde::{Deserialize, Deserializer, Serialize};
 
+pub mod conf;
 pub mod r#const;
 pub mod error;
 pub mod model;
 pub mod scan;
-pub mod conf;
 
 pub type ScanResult<T, E = QrCodeScannerError> = anyhow::Result<T, E>;
 pub type DriveResult<T, E = DriveError> = anyhow::Result<T, E>;
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Debug, Clone)]
 pub struct DateTime(String);
 
 impl DateTime {
@@ -23,13 +23,13 @@ impl DateTime {
 impl<'a> Deserialize<'a> for DateTime {
     fn deserialize<D: Deserializer<'a>>(deserializer: D) -> Result<Self, D::Error> {
         let result = <&str>::deserialize(deserializer)?;
-        let dt = chrono::DateTime::parse_from_rfc3339(result)
-            .map_err(serde::de::Error::custom)?;
-        let format = dt.with_timezone(&chrono::FixedOffset::east(8 * 3600)).format(r#const::TIME_FORMAT);
+        let dt = chrono::DateTime::parse_from_rfc3339(result).map_err(serde::de::Error::custom)?;
+        let format = dt
+            .with_timezone(&chrono::FixedOffset::east(8 * 3600))
+            .format(r#const::TIME_FORMAT);
         Ok(DateTime::new(format.to_string()))
     }
 }
-
 
 pub struct Drive {
     client: reqwest::Client,

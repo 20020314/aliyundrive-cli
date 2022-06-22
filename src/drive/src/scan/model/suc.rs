@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
 use crate::scan::model::AuthorizationToken;
+use crate::DateTime;
 use anyhow::anyhow;
 use reqwest::Url;
 use serde::Deserialize;
-use crate::DateTime;
 
 #[derive(Deserialize, Debug)]
 pub struct GotoResponse {

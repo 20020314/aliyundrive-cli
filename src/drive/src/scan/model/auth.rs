@@ -3,13 +3,13 @@ use crate::scan::model::suc::GotoResponse;
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
-pub struct Token {
+pub struct MobileAccessToken {
     #[serde(rename = "token")]
     #[serde(default)]
     value: Option<String>,
 }
 
-impl From<&String> for Token {
+impl From<&String> for MobileAccessToken {
     fn from(token: &String) -> Self {
         Self {
             value: Some(token.to_string()),
@@ -27,8 +27,8 @@ pub struct AuthorizationCode {
     login_type: Option<String>,
 }
 
-impl From<&GotoResponse> for AuthorizationCode {
-    fn from(from: &GotoResponse) -> Self {
+impl From<GotoResponse> for AuthorizationCode {
+    fn from(from: GotoResponse) -> Self {
         let code = from.extract_authorization_code();
         match code {
             Ok(code) => {
