@@ -77,15 +77,22 @@ impl QrCodeScanner {
         &mut self,
         token: auth::MobileAccessToken,
     ) -> ScanResult<suc::WebLoginResponse> {
-        if self.session.read().await.is_empty() {
+        let session = self.session.read().await;
+        let session_value = if session.is_empty() {
             let mut rw_session = self.session.write().await;
             let session_value = self.init_session().await?;
-            rw_session.push_str(session_value.as_str())
-        }
+            rw_session.push_str(session_value.as_str());
+            session_value
+        } else {
+            String::from(session.as_str())
+        };
         let resp = self
             .client
             .post(TOKEN_LOGIN_API)
-            .header(reqwest::header::COOKIE, format!("SESSIONID={}", ""))
+            .header(
+                reqwest::header::COOKIE,
+                format!("SESSIONID={}", session_value),
+            )
             .json(&token)
             .send()
             .await?;
@@ -93,17 +100,21 @@ impl QrCodeScanner {
         log::debug!("goto response: {:#?}", goto_response);
         let authorization_code = auth::AuthorizationCode::from(goto_response);
         log::debug!("authorization code {:#?}", authorization_code);
-        self.get_web_token(authorization_code).await
+        self.get_web_token(authorization_code, session_value).await
     }
 
     async fn get_web_token(
-        &mut self,
+        &self,
         authorization_code: auth::AuthorizationCode,
+        session_value: String,
     ) -> ScanResult<suc::WebLoginResponse> {
         let resp = self
             .client
             .post(GET_WEB_TOKEN_API)
-            .header(reqwest::header::COOKIE, format!("SESSIONID={}", ""))
+            .header(
+                reqwest::header::COOKIE,
+                format!("SESSIONID={}", session_value),
+            )
             .json(&authorization_code)
             .send()
             .await?;
