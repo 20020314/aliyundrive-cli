@@ -35,11 +35,11 @@ pub(crate) async fn qrcode_token_handler(
                 // The mobile APP scans the code successfully and confirms the login
                 if query_response.is_confirmed() {
                     // Get the mobile login Result
-                    let mobile_login_result = query_response
+                    let mobile_login_response = query_response
                         .get_mobile_login_result()
                         .context("failed to get mobile login result")?;
                     // Mobile refresh token
-                    let mobile_refresh_token = mobile_login_result
+                    let mobile_refresh_token = mobile_login_response
                         .refresh_token()
                         .context("failed to get mobile refresh token")?;
                     if mobile_token || (!web_token) {
@@ -48,7 +48,7 @@ pub(crate) async fn qrcode_token_handler(
                     }
 
                     let web_refresh_token = if web_token {
-                        let access_token = mobile_login_result
+                        let access_token = mobile_login_response
                             .access_token()
                             .context("failed to get web access token")?;
                         let goto_result = scan.token_login(Token::from(&access_token)).await?;

@@ -1,10 +1,10 @@
-mod conf;
 mod handler;
 
-use crate::conf::rw::RW;
+use drive::conf::rw::RW;
 use anyhow::Context;
 use clap::{Parser, Subcommand};
 use std::io::Write;
+use drive::conf;
 
 #[derive(Parser, Debug)]
 #[clap(author = "<gngpp verticle@foxmail.com>", version, about = "Alibaba Cloud Disk Terminal CLI Tool", long_about = None, arg_required_else_help = true)]
@@ -92,7 +92,7 @@ fn init_log(debug: bool) {
                 "{} {}: {}",
                 record.level(),
                 //Format like you want to: <-----------------
-                chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.3f"),
+                chrono::Local::now().format(drive::r#const::TIME_FORMAT),
                 record.args()
             )
         })

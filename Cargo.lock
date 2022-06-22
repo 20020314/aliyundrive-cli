@@ -32,12 +32,10 @@ dependencies = [
  "clap",
  "drive",
  "env_logger",
- "lazy_static",
  "log",
  "qrcode",
  "reqwest",
  "serde",
- "serde_yaml",
  "tokio",
 ]
 
@@ -331,11 +329,13 @@ dependencies = [
  "base64",
  "chrono",
  "env_logger",
+ "lazy_static",
  "log",
  "qrcode",
  "reqwest",
  "serde",
  "serde_json",
+ "serde_yaml",
 ]
 
 [[package]]

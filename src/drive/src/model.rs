@@ -1,7 +1,7 @@
 use std::fmt;
 use std::str::FromStr;
-use serde::{Deserialize, Deserializer, Serialize};
-use std::time::SystemTime;
+use serde::{Deserialize, Serialize};
+use crate::DateTime;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct CloudFile {
@@ -22,28 +22,31 @@ pub struct CloudFile {
     pub url: Option<String>,
 }
 
+impl From<ListFileItem> for CloudFile {
+    fn from(f: ListFileItem) -> Self {
+        Self {
+            name: f.name,
+            id: f.id,
+            r#type: f.r#type,
+            created_at: f.created_at,
+            updated_at: f.updated_at,
+            size: f.size,
+            // 文件列表接口返回的图片下载地址经常是有问题的, 不使用它
+            url: if matches!(f.category.as_deref(), Some("image")) {
+                None
+            } else {
+                f.url
+            },
+        }
+    }
+}
+
+
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum FileType {
     Folder,
     File,
-}
-
-#[derive(Debug, Clone)]
-pub struct DateTime(SystemTime);
-
-impl DateTime {
-    pub fn new(st: SystemTime) -> Self {
-        Self(st)
-    }
-}
-
-impl<'a> Deserialize<'a> for DateTime {
-    fn deserialize<D: Deserializer<'a>>(deserializer: D) -> Result<Self, D::Error> {
-        let result = <&str>::deserialize(deserializer)?;
-        let dt = chrono::DateTime::parse_from_rfc3339(result).map_err(serde::de::Error::custom)?;
-        Ok(Self(dt.into()))
-    }
 }
 
 #[derive(Debug, Clone, Serialize)]

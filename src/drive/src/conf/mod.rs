@@ -143,9 +143,9 @@ impl RW<Config, AuthorizationToken> for Context {
 
 #[cfg(test)]
 mod tests {
+
+    use crate::conf::{AuthorizationToken, Config, Context};
     use crate::conf::rw::RW;
-    use crate::conf::Context;
-    use crate::conf::{AuthorizationToken, Config};
 
     #[test]
     fn read_write_test() {
