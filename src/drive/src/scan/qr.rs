@@ -76,9 +76,7 @@ impl QrCodeScanner {
         }
         return Err(QrCodeScannerError::from("Failed to get session"));
     }
-}
 
-impl QrCodeScanner {
     // QRCode generation
     pub async fn qrcode_generator(&self) -> ScanResult<gen::GeneratorQrCodeResponse> {
         let resp = self
