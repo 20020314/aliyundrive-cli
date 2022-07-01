@@ -2,7 +2,7 @@ pub mod rw;
 
 use crate::scan::ClientType;
 use crate::DateTime;
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use lazy_static::lazy_static;
 use rw::RW;
 use serde::{Deserialize, Serialize};
@@ -68,9 +68,9 @@ impl Authorization {
     }
 }
 
-pub struct Context;
+pub struct Conf;
 
-impl Context {
+impl Conf {
     pub fn init() -> anyhow::Result<()> {
         // work dir not exists
         let p = WORK_DIR_PATH.expect("Initialize aliyundrive directory error");
@@ -98,7 +98,7 @@ impl Context {
     }
 }
 
-impl RW<Config, Authorization> for Context {
+impl RW<Config, Authorization> for Conf {
     fn print_std() {
         let p = CONFIG_FILE_PATH.expect("Initialize aliyundrive directory error");
         let mut f = std::fs::File::open(p).expect("Failed to read configuration");
@@ -108,27 +108,23 @@ impl RW<Config, Authorization> for Context {
         print!("{}", config_str)
     }
 
-    fn write(t: Config) -> serde_yaml::Result<()> {
+    fn write(t: Config) -> anyhow::Result<()> {
         let p = CONFIG_FILE_PATH.expect("Initialize config file error");
         let f = std::fs::File::options()
             .write(true)
             .open(p)
             .expect("Failed to read configuration");
-        serde_yaml::to_writer(f, &t)
+        serde_yaml::to_writer(f, &t).context("Serialized write configuration failed")
     }
 
-    fn read() -> serde_yaml::Result<Config> {
+    fn read() -> anyhow::Result<Config> {
         let p = CONFIG_FILE_PATH.expect("Initialize aliyundrive directory error");
         let f = std::fs::File::open(p).expect("Failed to read configuration");
-        serde_yaml::from_reader::<std::fs::File, Config>(f)
+        serde_yaml::from_reader::<std::fs::File, Config>(f).context("Serialized read configuration failed")
     }
 
-    fn read_token(is_mobile: bool) -> serde_yaml::Result<Authorization> {
-        let config_result = Context::read();
-        let config = match config_result {
-            Ok(config) => config,
-            Err(e) => return Err(serde_yaml::Error::from(e)),
-        };
+    fn read_token(is_mobile: bool) -> anyhow::Result<Authorization> {
+        let config = Conf::read().context("Read config error")?;
         if is_mobile {
             if let Some(token) = config.mobile_authorization {
                 return Ok(token);
@@ -141,14 +137,14 @@ impl RW<Config, Authorization> for Context {
         Ok(Authorization::default())
     }
 
-    fn write_token(is_mobile: bool, t: Authorization) -> serde_yaml::Result<()> {
-        let mut config = Context::read()?;
+    fn write_token(is_mobile: bool, t: Authorization) -> anyhow::Result<()> {
+        let mut config = Conf::read()?;
         if is_mobile {
             config.mobile_authorization = Some(t)
         } else {
             config.web_authorization = Some(t)
         }
-        Context::write(config)
+        Conf::write(config)
     }
 }
 
@@ -156,11 +152,11 @@ impl RW<Config, Authorization> for Context {
 mod tests {
 
     use crate::conf::rw::RW;
-    use crate::conf::{Authorization, Config, Context};
+    use crate::conf::{Authorization, Config, Conf};
 
     #[test]
     fn read_write_test() {
-        let read_config = Context::read().unwrap();
+        let read_config = Conf::read().unwrap();
         println!("{:?}", read_config);
 
         let p1 = Authorization::new(
@@ -176,13 +172,13 @@ mod tests {
             None,
         );
         let config = Config::new(Some(p1), Some(p2));
-        Context::write(config).unwrap();
-        let read_config = Context::read().unwrap();
+        Conf::write(config).unwrap();
+        let read_config = Conf::read().unwrap();
         println!("{:?}", read_config);
 
-        let t1 = Context::read_token(false).unwrap();
+        let t1 = Conf::read_token(false).unwrap();
         println!("{:?}", t1);
-        let t2 = Context::read_token(true).unwrap();
+        let t2 = Conf::read_token(true).unwrap();
         println!("{:?}", t2);
 
         let p3 = Authorization::new(
@@ -197,10 +193,10 @@ mod tests {
             Some(String::from("a8")),
             None,
         );
-        Context::write_token(false, p3).unwrap();
-        Context::write_token(true, p4).unwrap();
+        Conf::write_token(false, p3).unwrap();
+        Conf::write_token(true, p4).unwrap();
 
-        let read_config = Context::read().unwrap();
+        let read_config = Conf::read().unwrap();
         println!("{:?}", read_config);
     }
 }

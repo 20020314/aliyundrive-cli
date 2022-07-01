@@ -7,11 +7,11 @@ where
 {
     fn print_std();
 
-    fn write(t: T1) -> serde_yaml::Result<()>;
+    fn write(t: T1) -> anyhow::Result<()>;
 
-    fn read() -> serde_yaml::Result<T1>;
+    fn read() -> anyhow::Result<T1>;
 
-    fn read_token(is_mobile: bool) -> serde_yaml::Result<T2>;
+    fn read_token(is_mobile: bool) -> anyhow::Result<T2>;
 
-    fn write_token(is_mobile: bool, t: T2) -> serde_yaml::Result<()>;
+    fn write_token(is_mobile: bool, t: T2) -> anyhow::Result<()>;
 }
