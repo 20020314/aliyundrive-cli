@@ -1,10 +1,10 @@
 mod handler;
 
-use drive::conf::rw::RW;
 use anyhow::Context;
 use clap::{Parser, Subcommand};
-use std::io::Write;
 use drive::conf;
+use drive::conf::rw::RW;
+use std::io::Write;
 
 #[derive(Parser, Debug)]
 #[clap(author = "<gngpp verticle@foxmail.com>", version, about = "Alibaba Cloud Disk Terminal CLI Tool", long_about = None, arg_required_else_help = true)]
@@ -19,12 +19,12 @@ pub struct CLI {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Scan the qrcode to log in to obtain token or other information
+    /// Scan the qrcode to login to obtain token or other information
     #[clap(arg_required_else_help = true)]
     QRCODE {
-        /// Mobile QRCode scan code login
+        /// Mobile App QRCode scan code login
         #[clap(long, short, group = "token")]
-        mobile_token: bool,
+        app_token: bool,
         /// Web QRCode scan code login
         #[clap(long, short, group = "token")]
         web_token: bool,
@@ -50,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
     match &cli.commands {
         Some(Commands::QRCODE {
             web_token,
-            mobile_token,
+                 app_token: mobile_token,
             sava,
         }) => {
             // qrcode scan
@@ -59,18 +59,17 @@ async fn main() -> anyhow::Result<()> {
                     handler::qrcode_token_handler(*web_token, *mobile_token).await?;
                 // Sava the authorization token to config file
                 if *sava {
-                    conf::Context::init()?;
-                    let authorization_token =
-                        conf::AuthorizationToken::new(None, Some(refresh_token));
-                    conf::Context::write_token(*mobile_token, authorization_token)
-                        .context("Failed to save configuration!")?
+                    // conf::Context::init()?;
+                    // let authorization_token = conf::Authorization::new(None, Some(refresh_token));
+                    // conf::Context::write_token(*mobile_token, authorization_token)
+                    //     .context("Failed to save configuration!")?
                 }
             }
         }
         Some(Commands::CONFIG { cat }) => {
             if *cat {
-                conf::Context::init()?;
-                conf::Context::print_std();
+                conf::Conf::init()?;
+                conf::Conf::print_std();
             }
         }
         None => {}

@@ -13,11 +13,11 @@ pub enum Dense1x2 {
 impl Pixel for Dense1x2 {
     type Image = String;
     type Canvas = Canvas1x2;
-    fn default_color(color: Color) -> Dense1x2 {
-        color.select(Dense1x2::Dark, Dense1x2::Light)
-    }
     fn default_unit_size() -> (u32, u32) {
         (1, 1)
+    }
+    fn default_color(color: Color) -> Dense1x2 {
+        color.select(Dense1x2::Dark, Dense1x2::Light)
     }
 }
 

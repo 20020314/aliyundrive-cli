@@ -2,6 +2,7 @@ use anyhow::Context;
 use drive::scan;
 use drive::scan::model::query::QueryQrCodeCkForm;
 use drive::scan::model::{auth, AuthorizationToken, Ok};
+use qrcode::qr_svg;
 
 pub(crate) async fn qrcode_token_handler(
     web_token: bool,
