@@ -18,7 +18,7 @@ base64 = "0.13.0"
 chrono = "0.4.9"
 lazy_static = "1.4.0"
 
-qrcode = { path = "../qrcode" }
+qrcode = { path = "../qrcode", default-features = false }
 
 [lib]
 name = "drive"
