@@ -7,7 +7,7 @@ use drive::conf::rw::RW;
 use std::io::Write;
 
 #[derive(Parser, Debug)]
-#[clap(author = "<gngpp verticle@foxmail.com>", version, about = "Alibaba Cloud Disk Terminal CLI Tool", long_about = None, arg_required_else_help = true)]
+#[clap(author, version, about, arg_required_else_help = true)]
 pub struct CLI {
     /// Enable debug mode
     #[clap(short, long)]
