@@ -1,15 +1,15 @@
 use std::string::String;
 
 fn main() {
-    // let mut s = mem::ManuallyDrop::new(s);
+    // let mut saa = mem::ManuallyDrop::new(saa);
     //
-    // let ptr = s.as_mut_ptr();
-    // let len = s.len();
-    // let capacity = s.capacity();
+    // let ptr = saa.as_mut_ptr();
+    // let len = saa.len();
+    // let capacity = saa.capacity();
     //
-    // let s = unsafe { String::from_raw_parts(ptr, len, capacity) };
+    // let saa = unsafe { String::from_raw_parts(ptr, len, capacity) };
 
-    // assert_eq!(String::from("hello"), s);
+    // assert_eq!(String::from("hello"), saa);
     let str = "";
     let vec = base64::decode(str).unwrap();
     let string = vec.iter().map(|&c| c as char).collect::<String>();

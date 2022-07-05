@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::scan::model::Ok;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 // build qrcode result
 #[derive(Deserialize, Serialize, Debug)]
@@ -54,7 +54,7 @@ impl Ok for GeneratorQrCodeResponse {
     }
 }
 
-#[derive(Serialize, Deserialize,Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct GeneratorQrCodeContent {
     #[serde(default)]
     data: Option<GeneratorQrCodeContentData>,
@@ -72,7 +72,7 @@ impl GeneratorQrCodeContent {
     }
 }
 
-#[derive(Debug,Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GeneratorQrCodeContentData {
     #[serde(default)]
     t: i64,
@@ -83,7 +83,6 @@ pub struct GeneratorQrCodeContentData {
 
     #[serde(default)]
     ck: Option<String>,
-
 }
 
 impl GeneratorQrCodeContentData {

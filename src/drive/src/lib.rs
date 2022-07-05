@@ -1,9 +1,8 @@
 use crate::error::{DriveError, QrCodeScannerError};
-use crate::r#const::{REQUEST_CONNECT_TIMEOUT, REQUEST_POOL_IDLE_TIMEOUT, REQUEST_TIMEOUT, UA};
+use crate::standard::{REQUEST_CONNECT_TIMEOUT, REQUEST_POOL_IDLE_TIMEOUT, REQUEST_TIMEOUT, UA};
 use serde::{Deserialize, Deserializer, Serialize};
 
-pub mod conf;
-pub mod r#const;
+pub mod standard;
 pub mod error;
 pub mod model;
 pub mod scan;
@@ -26,7 +25,7 @@ impl<'a> Deserialize<'a> for DateTime {
         let dt = chrono::DateTime::parse_from_rfc3339(result).map_err(serde::de::Error::custom)?;
         let format = dt
             .with_timezone(&chrono::FixedOffset::east(8 * 3600))
-            .format(r#const::TIME_FORMAT);
+            .format(standard::TIME_FORMAT);
         Ok(DateTime::new(format.to_string()))
     }
 }

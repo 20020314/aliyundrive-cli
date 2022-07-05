@@ -1,17 +1,19 @@
+mod conf;
 mod handler;
 
-use anyhow::Context;
 use clap::{Parser, Subcommand};
-use drive::conf;
-use drive::conf::rw::RW;
 use std::io::Write;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, arg_required_else_help = true)]
+#[clap(args_conflicts_with_subcommands = true)]
 pub struct CLI {
     /// Enable debug mode
     #[clap(short, long)]
     debug: bool,
+
+    #[clap(short, long)]
+    refresh_token: Option<String>,
 
     #[clap(subcommand)]
     commands: Option<Commands>,
@@ -19,25 +21,46 @@ pub struct CLI {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
+    /// Start the daemon to refresh the token
+    Daemon,
     /// Scan the qrcode to login to obtain token or other information
     #[clap(arg_required_else_help = true)]
-    QRCODE {
+    #[clap(subcommand)]
+    QR(QrCommand),
+    /// Sets a custom config file
+    #[clap(arg_required_else_help = true)]
+    Config {
+        /// Print configuration
+        #[clap(long)]
+        cat: bool,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum QrCommand {
+    /// Scan QRCode login to get a token
+    Login {
         /// Mobile App QRCode scan code login
         #[clap(long, short, group = "token")]
-        app_token: bool,
+        app: bool,
         /// Web QRCode scan code login
         #[clap(long, short, group = "token")]
-        web_token: bool,
+        web: bool,
         /// Save the login token to a file
         #[clap(long, short, requires = "token")]
         sava: bool,
     },
-    /// Sets a custom config file
+    /// Generate a QRCode
+    Generate,
+    /// Query the QRCode login result
     #[clap(arg_required_else_help = true)]
-    CONFIG {
-        /// Print configuration
-        #[clap(short, long)]
-        cat: bool,
+    Query {
+        /// Query parameter t
+        #[clap(long)]
+        t: i64,
+        /// Query parameter ck
+        #[clap(long)]
+        ck: String,
     },
 }
 
@@ -47,34 +70,7 @@ async fn main() -> anyhow::Result<()> {
     // enabled debug mode
     init_log(cli.debug);
     // subcommands
-    match &cli.commands {
-        Some(Commands::QRCODE {
-            web_token,
-                 app_token: mobile_token,
-            sava,
-        }) => {
-            // qrcode scan
-            if *web_token || *mobile_token {
-                let refresh_token =
-                    handler::qrcode_token_handler(*web_token, *mobile_token).await?;
-                // Sava the authorization token to config file
-                if *sava {
-                    // conf::Context::init()?;
-                    // let authorization_token = conf::Authorization::new(None, Some(refresh_token));
-                    // conf::Context::write_token(*mobile_token, authorization_token)
-                    //     .context("Failed to save configuration!")?
-                }
-            }
-        }
-        Some(Commands::CONFIG { cat }) => {
-            if *cat {
-                conf::Conf::init()?;
-                conf::Conf::print_std();
-            }
-        }
-        None => {}
-    }
-
+    handler::subcommands_handler(&cli.commands).await?;
     Ok(())
 }
 
@@ -91,7 +87,7 @@ fn init_log(debug: bool) {
                 "{} {}: {}",
                 record.level(),
                 //Format like you want to: <-----------------
-                chrono::Local::now().format(drive::r#const::TIME_FORMAT),
+                chrono::Local::now().format(drive::standard::TIME_FORMAT),
                 record.args()
             )
         })

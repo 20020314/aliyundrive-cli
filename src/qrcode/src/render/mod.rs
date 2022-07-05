@@ -130,7 +130,7 @@ impl<'a, P: Pixel> Renderer<'a, P> {
     ///
     /// For instance, a version 1 QR code has 19 modules across including the
     /// quiet zone. If we request an image of size ≥200×200, we get that each
-    /// module's size should be 11×11, so the actual image size will be 209×209.
+    /// module'saa size should be 11×11, so the actual image size will be 209×209.
     pub fn min_dimensions(&mut self, width: u32, height: u32) -> &mut Self {
         let quiet_zone = if self.has_quiet_zone { 2 } else { 0 } * self.quiet_zone;
         let width_in_modules = self.modules_count + quiet_zone;
@@ -146,7 +146,7 @@ impl<'a, P: Pixel> Renderer<'a, P> {
     ///
     /// For instance, a version 1 QR code has 19 modules across including the
     /// quiet zone. If we request an image of size ≤200×200, we get that each
-    /// module's size should be 10×10, so the actual image size will be 190×190.
+    /// module'saa size should be 10×10, so the actual image size will be 190×190.
     ///
     /// The module size is at least 1×1, so if the restriction is too small, the
     /// final image *can* be larger than the input.

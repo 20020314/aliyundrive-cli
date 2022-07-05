@@ -1,10 +1,8 @@
-pub mod rw;
-
-use crate::scan::ClientType;
-use crate::DateTime;
 use anyhow::{anyhow, Context};
+use drive::scan::ClientType;
+use drive::DateTime;
 use lazy_static::lazy_static;
-use rw::RW;
+use serde::ser;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
 use std::path::PathBuf;
@@ -24,6 +22,22 @@ lazy_static! {
         let x = Box::new(p);
         Some(Box::leak(x))
     };
+}
+
+pub trait RW<T1, T2>
+where
+    T1: ser::Serialize,
+    T2: ser::Serialize,
+{
+    fn print_std();
+
+    fn write(t: T1) -> anyhow::Result<()>;
+
+    fn read() -> anyhow::Result<T1>;
+
+    fn read_token(is_mobile: bool) -> anyhow::Result<T2>;
+
+    fn write_token(is_mobile: bool, t: T2) -> anyhow::Result<()>;
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
@@ -152,8 +166,7 @@ impl RW<Config, Authorization> for Conf {
 #[cfg(test)]
 mod tests {
 
-    use crate::conf::rw::RW;
-    use crate::conf::{Authorization, Conf, Config};
+    use crate::conf::{Authorization, Conf, Config, RW};
 
     #[test]
     fn read_write_test() {

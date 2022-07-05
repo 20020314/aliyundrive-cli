@@ -1,7 +1,7 @@
 extern crate core;
 
 use core::time;
-use drive::scan::model::auth::MobileAccessToken;
+use drive::scan::model::auth::AppAccessToken;
 use drive::scan::model::query::QueryQrCodeCkForm;
 use drive::scan::model::{AuthorizationToken, Ok};
 use drive::scan::qr::QrCodeScanner;
@@ -30,7 +30,7 @@ async fn main() {
             }
             // 移动端APP扫码成功并确认登陆
             if query_response.is_confirmed() {
-                let mobile_login_response = query_response.get_mobile_login_result().unwrap();
+                let mobile_login_response = query_response.get_app_login_result().unwrap();
                 println!("mobile_login_result: {:#?}", mobile_login_response);
 
                 let access_token = mobile_login_response.access_token().unwrap();
@@ -40,7 +40,7 @@ async fn main() {
                 println!("mobile_login_result-refresh_token: {}\n", refresh_token);
 
                 let web_login_response = scan
-                    .do_get_web_token_response(MobileAccessToken::from(&access_token))
+                    .do_get_web_token_response(AppAccessToken::from(&access_token))
                     .await
                     .unwrap();
                 println!("web_login_result: {:#?}", web_login_response);

@@ -308,7 +308,7 @@ mod parse_tests {
 
     #[test]
     fn test_not_kanji_2() {
-        // Note that it's implementation detail that the byte seq is split into
+        // Note that it'saa implementation detail that the byte seq is split into
         // two. Perhaps adjust the test to check for this.
         let segs = parse(b"\xeb\xc0");
         assert_eq!(

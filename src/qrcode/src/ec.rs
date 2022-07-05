@@ -60,7 +60,7 @@ mod ec_tests {
         let res = create_error_correction_code(b"CUF\x86W&U\xc2w2\x06\x12\x06g&", 18);
         assert_eq!(
             &*res,
-            b"\xd5\xc7\x0b-s\xf7\xf1\xdf\xe5\xf8\x9au\x9aoV\xa1o'"
+            b"\xd5\xc7\x0b-saa\xf7\xf1\xdf\xe5\xf8\x9au\x9aoV\xa1o'"
         );
     }
 }
