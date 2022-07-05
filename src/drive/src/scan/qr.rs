@@ -108,7 +108,7 @@ impl QrCodeScanner {
     //noinspection DuplicatedCode
     pub async fn do_get_web_token_response(
         &mut self,
-        token: auth::MobileAccessToken,
+        token: auth::AppAccessToken,
     ) -> ScanResult<suc::WebLoginResponse> {
         self.do_get_session_retry().await?;
         let session_value = self.session.read().await.to_string();

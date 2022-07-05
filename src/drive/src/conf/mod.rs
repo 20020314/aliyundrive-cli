@@ -120,7 +120,8 @@ impl RW<Config, Authorization> for Conf {
     fn read() -> anyhow::Result<Config> {
         let p = CONFIG_FILE_PATH.expect("Initialize aliyundrive directory error");
         let f = std::fs::File::open(p).expect("Failed to read configuration");
-        serde_yaml::from_reader::<std::fs::File, Config>(f).context("Serialized read configuration failed")
+        serde_yaml::from_reader::<std::fs::File, Config>(f)
+            .context("Serialized read configuration failed")
     }
 
     fn read_token(is_mobile: bool) -> anyhow::Result<Authorization> {
@@ -152,7 +153,7 @@ impl RW<Config, Authorization> for Conf {
 mod tests {
 
     use crate::conf::rw::RW;
-    use crate::conf::{Authorization, Config, Conf};
+    use crate::conf::{Authorization, Conf, Config};
 
     #[test]
     fn read_write_test() {

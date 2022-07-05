@@ -25,11 +25,11 @@ impl QueryQrCodeResponse {
         }
     }
 
-    pub fn get_mobile_login_result(&self) -> Option<suc::MobileLoginResponse> {
+    pub fn get_app_login_result(&self) -> Option<suc::AppLoginResponse> {
         let biz_ext = self.get_biz_ext()?;
         let vec = base64::decode(biz_ext).unwrap();
         let string = vec.iter().map(|&c| c as char).collect::<String>();
-        serde_json::from_str::<suc::MobileLoginResponse>(string.as_str()).ok()
+        serde_json::from_str::<suc::AppLoginResponse>(string.as_str()).ok()
     }
 
     fn get_biz_ext(&self) -> Option<String> {

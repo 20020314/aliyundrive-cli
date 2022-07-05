@@ -3,13 +3,13 @@ use crate::scan::model::suc::GotoResponse;
 use serde::Serialize;
 
 #[derive(Serialize, Debug)]
-pub struct MobileAccessToken {
+pub struct AppAccessToken {
     #[serde(rename = "token")]
     #[serde(default)]
     value: Option<String>,
 }
 
-impl From<&String> for MobileAccessToken {
+impl From<&String> for AppAccessToken {
     fn from(token: &String) -> Self {
         Self {
             value: Some(token.to_string()),

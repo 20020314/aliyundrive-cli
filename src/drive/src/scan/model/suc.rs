@@ -44,12 +44,12 @@ impl GotoResponse {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct MobileLoginResponse {
+pub struct AppLoginResponse {
     #[serde(default)]
     pub pds_login_result: Option<PdsLoginResult>,
 }
 
-impl AuthorizationToken for MobileLoginResponse {
+impl AuthorizationToken for AppLoginResponse {
     fn access_token(&self) -> Option<String> {
         let pds_login_result = self.pds_login_result.as_ref()?;
         let access_token = pds_login_result.access_token.as_ref()?;
