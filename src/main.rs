@@ -50,7 +50,7 @@ enum QrCommand {
         #[clap(long, short, requires = "token")]
         sava: bool,
     },
-    /// Generate a QRCode
+    /// Generate QRCode content and query parameters
     Generate,
     /// Query the QRCode login result
     #[clap(arg_required_else_help = true)]
