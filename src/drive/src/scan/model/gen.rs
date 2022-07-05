@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
 use crate::scan::model::Ok;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
 // build qrcode result
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct GeneratorQrCodeResponse {
     #[serde(default)]
     content: Option<GeneratorQrCodeContent>,
@@ -25,6 +25,10 @@ impl GeneratorQrCodeResponse {
 
     pub fn get_content(&self) -> Option<&GeneratorQrCodeContent> {
         self.content.as_ref()
+    }
+
+    pub fn get_content_data(self) -> Option<GeneratorQrCodeContentData> {
+        self.content?.data
     }
 
     pub fn get_qrcode_content(&self) -> String {
@@ -50,7 +54,7 @@ impl Ok for GeneratorQrCodeResponse {
     }
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Serialize, Deserialize,Debug, Clone)]
 pub struct GeneratorQrCodeContent {
     #[serde(default)]
     data: Option<GeneratorQrCodeContentData>,
@@ -68,7 +72,7 @@ impl GeneratorQrCodeContent {
     }
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug,Serialize, Deserialize, Clone)]
 pub struct GeneratorQrCodeContentData {
     #[serde(default)]
     t: i64,
@@ -80,25 +84,6 @@ pub struct GeneratorQrCodeContentData {
     #[serde(default)]
     ck: Option<String>,
 
-    #[serde(default)]
-    #[serde(rename = "resultCode")]
-    result_code: i32,
-
-    #[serde(default)]
-    #[serde(rename = "titleMsg")]
-    title_msg: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "traceId")]
-    trace_id: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "errorCode")]
-    error_code: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "isMobile")]
-    is_mobile: bool,
 }
 
 impl GeneratorQrCodeContentData {
