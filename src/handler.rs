@@ -9,7 +9,7 @@ pub(crate) async fn subcommands_handler(
     use crate::Commands;
     use crate::QrCommand;
     match &subcommands {
-        Some(Commands::QR(QrCommand::Login { app, web, sava })) => {
+        Some(Commands::QR(QrCommand::Scan { app, web, sava })) => {
             // qrcode scan
             if *web || *app {
                 let refresh_token = qrcode_token_handler(*web, *app).await?;

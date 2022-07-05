@@ -38,8 +38,9 @@ enum Commands {
 
 #[derive(Subcommand, Debug)]
 enum QrCommand {
-    /// Scan QRCode login to get a token
-    Login {
+    /// Scan QRCode login to get a refresh token
+    #[clap(arg_required_else_help = true)]
+    Scan {
         /// Mobile App QRCode scan code login
         #[clap(long, short, group = "token")]
         app: bool,
