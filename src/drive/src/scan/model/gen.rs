@@ -15,13 +15,6 @@ pub struct GeneratorQrCodeResponse {
 }
 
 impl GeneratorQrCodeResponse {
-    #[allow(dead_code)]
-    fn new() -> Self {
-        Self {
-            content: None,
-            has_error: false,
-        }
-    }
 
     pub fn get_content(&self) -> Option<&GeneratorQrCodeContent> {
         self.content.as_ref()
