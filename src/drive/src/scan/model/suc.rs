@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 
+use crate::conf::Authorization;
 use crate::scan::model::AuthorizationToken;
+use crate::scan::ClientType;
 use crate::DateTime;
 use anyhow::anyhow;
 use reqwest::Url;
@@ -43,7 +45,7 @@ impl GotoResponse {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct AppLoginResponse {
     #[serde(default)]
     pub pds_login_result: Option<PdsLoginResult>,
@@ -63,34 +65,29 @@ impl AuthorizationToken for AppLoginResponse {
     }
 }
 
-#[derive(Deserialize, Debug, Default)]
+impl TryInto<Authorization> for AppLoginResponse {
+    type Error = anyhow::Error;
+
+    fn try_into(self) -> Result<Authorization, Self::Error> {
+        let pds_login_result = self
+            .pds_login_result
+            .ok_or(anyhow!("failed to get pds login result"))?;
+        Ok(Authorization {
+            user_id: pds_login_result.user_id,
+            nick_name: pds_login_result.nick_name,
+            client_type: Some(ClientType::App),
+            access_token: pds_login_result.access_token,
+            refresh_token: pds_login_result.refresh_token,
+            expire_time: pds_login_result.expire_time,
+        })
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct PdsLoginResult {
-    #[serde(default)]
-    pub role: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "userData")]
-    pub user_data: Option<UserData>,
-
-    #[serde(default)]
-    #[serde(rename = "isFirstLogin")]
-    pub is_first_login: bool,
-
-    #[serde(default)]
-    #[serde(rename = "needLink")]
-    pub need_link: bool,
-
-    #[serde(default)]
-    #[serde(rename = "loginType")]
-    pub login_type: Option<String>,
-
     #[serde(default)]
     #[serde(rename = "nickName")]
     pub nick_name: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "needRpVerify")]
-    pub need_rp_verify: bool,
 
     #[serde(default)]
     pub avatar: Option<String>,
@@ -120,23 +117,8 @@ pub struct PdsLoginResult {
     pub expire_time: Option<DateTime>,
 
     #[serde(default)]
-    #[serde(rename = "requestId")]
-    pub request_id: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "dataPinSetup")]
-    pub data_pin_setup: bool,
-
-    #[serde(default)]
-    pub state: Option<String>,
-
-    #[serde(default)]
     #[serde(rename = "tokenType")]
     pub token_type: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "dataPinSaved")]
-    pub data_pin_saved: bool,
 
     #[serde(default)]
     #[serde(rename = "refreshToken")]
@@ -147,48 +129,18 @@ pub struct PdsLoginResult {
 }
 
 #[derive(Deserialize, Debug, Default)]
-pub struct UserData {
-    #[serde(default)]
-    #[serde(rename = "DingDingRobotUrl")]
-    pub ding_ding_robot_url: Option<String>,
-
-    #[serde(default)]
-    #[serde(rename = "FeedBackSwitch")]
-    pub feed_back_switch: bool,
-
-    #[serde(default)]
-    #[serde(rename = "FollowingDesc")]
-    pub following_desc: Option<String>,
-}
-
-#[derive(Deserialize, Debug, Default)]
 pub struct WebLoginResponse {
     #[serde(default)]
     pub default_sbox_drive_id: Option<String>,
 
     #[serde(default)]
-    pub role: Option<String>,
-
-    #[serde(default)]
     pub user_name: Option<String>,
-
-    #[serde(default)]
-    pub need_link: bool,
 
     #[serde(default)]
     pub expire_time: Option<DateTime>,
 
     #[serde(default)]
-    pub pin_setup: bool,
-
-    #[serde(default)]
-    pub need_rp_verify: bool,
-
-    #[serde(default)]
     pub avatar: Option<String>,
-
-    #[serde(default)]
-    pub user_data: Option<UserData>,
 
     #[serde(default)]
     pub token_type: Option<String>,
@@ -206,16 +158,10 @@ pub struct WebLoginResponse {
     pub refresh_token: Option<String>,
 
     #[serde(default)]
-    pub is_first_login: bool,
-
-    #[serde(default)]
     pub user_id: Option<String>,
 
     #[serde(default)]
     pub nick_name: Option<String>,
-
-    #[serde(default)]
-    pub state: Option<String>,
 
     #[serde(default)]
     pub expires_in: i64,
@@ -234,13 +180,17 @@ impl AuthorizationToken for WebLoginResponse {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
-pub struct RefreshTokenResponse {
-    pub access_token: String,
-    pub refresh_token: String,
-    pub expires_in: u64,
-    pub token_type: String,
-    pub user_id: String,
-    pub nick_name: String,
-    pub default_drive_id: String,
+impl TryInto<Authorization> for WebLoginResponse {
+    type Error = anyhow::Error;
+
+    fn try_into(self) -> Result<Authorization, Self::Error> {
+        Ok(Authorization {
+            user_id: self.user_id,
+            nick_name: self.nick_name,
+            client_type: Some(ClientType::Web),
+            access_token: self.access_token,
+            refresh_token: self.refresh_token,
+            expire_time: self.expire_time,
+        })
+    }
 }

@@ -1,6 +1,6 @@
 use crate::error::QrCodeScannerError;
-use crate::standard::{REQUEST_CONNECT_TIMEOUT, REQUEST_POOL_IDLE_TIMEOUT, REQUEST_TIMEOUT, UA};
 use crate::scan::model::{auth, gen, query, suc, CkForm};
+use crate::standard::{REQUEST_CONNECT_TIMEOUT, REQUEST_POOL_IDLE_TIMEOUT, REQUEST_TIMEOUT, UA};
 use crate::ScanResult;
 use reqwest::Response;
 use std::fmt::Debug;

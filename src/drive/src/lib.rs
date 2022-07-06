@@ -2,10 +2,11 @@ use crate::error::{DriveError, QrCodeScannerError};
 use crate::standard::{REQUEST_CONNECT_TIMEOUT, REQUEST_POOL_IDLE_TIMEOUT, REQUEST_TIMEOUT, UA};
 use serde::{Deserialize, Deserializer, Serialize};
 
-pub mod standard;
+pub mod conf;
 pub mod error;
 pub mod model;
 pub mod scan;
+pub mod standard;
 
 pub type ScanResult<T, E = QrCodeScannerError> = anyhow::Result<T, E>;
 pub type DriveResult<T, E = DriveError> = anyhow::Result<T, E>;

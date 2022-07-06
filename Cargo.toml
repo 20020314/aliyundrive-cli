@@ -18,8 +18,6 @@ chrono = "0.4.9"
 tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread"] }
 reqwest = { version = "0.11.10", default-features = false, features = ["json", "cookies", "gzip", "rustls-tls"] }
 dirs = "4.0"
-lazy_static = "1.4.0"
-serde_yaml = "0.8.24"
 qrcode = { path = "src/qrcode" }
 drive = { path = "src/drive" }
 
