@@ -7,5 +7,5 @@
 ## 编译
 ```shell
  $ git clone https://github.com/gngpp/aliyundrive-cli.git && cd aliyundrive-cli
- $ cargo build --color=always --release --package aliyundrive-cli --bin aliyundrive-cli
+ $ cargo build --color=always --release
 ```
