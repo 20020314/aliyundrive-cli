@@ -11,4 +11,4 @@ pub const REQUEST_CONNECT_TIMEOUT: time::Duration = time::Duration::from_secs(20
 
 pub const REQUEST_TIMEOUT: time::Duration = time::Duration::from_secs(30);
 
-pub const TIME_FORMAT: &str = "%Y-%m-%d %H:%M:%S%.3f";
+pub const TIME_FORMAT: &str = "%Y-%m-%d %H:%M:%S";

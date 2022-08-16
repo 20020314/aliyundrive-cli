@@ -90,4 +90,4 @@ impl From<anyhow::Error> for QrCodeScannerError {
     }
 }
 
-impl std::error::Error for QrCodeScannerError {}
+impl Error for QrCodeScannerError {}

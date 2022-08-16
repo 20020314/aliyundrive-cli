@@ -1,6 +1,11 @@
 use crate::error::{DriveError, QrCodeScannerError};
+use crate::scan::model::query::QueryQrCodeCkForm;
+use crate::scan::model::{auth, AuthorizationToken, Ok};
 use crate::standard::{REQUEST_CONNECT_TIMEOUT, REQUEST_POOL_IDLE_TIMEOUT, REQUEST_TIMEOUT, UA};
+use anyhow::Context;
+use chrono::{FixedOffset, TimeZone, Timelike, Utc};
 use serde::{Deserialize, Deserializer, Serialize};
+use std::time::SystemTime;
 
 pub mod conf;
 pub mod error;
@@ -18,14 +23,25 @@ impl DateTime {
     pub fn new(st: String) -> Self {
         Self(st)
     }
+
+    pub fn to_timestamp(&self) -> i64 {
+        let time = chrono::NaiveDateTime::parse_from_str(self.0.as_str(), standard::TIME_FORMAT)
+            .expect("Failed to format time");
+        time.timestamp() - (8 * 3600)
+    }
+
+    pub fn to_string(&self) -> String {
+        self.0.clone()
+    }
 }
 
 impl<'a> Deserialize<'a> for DateTime {
     fn deserialize<D: Deserializer<'a>>(deserializer: D) -> Result<Self, D::Error> {
         let result = <&str>::deserialize(deserializer)?;
+
         let dt = chrono::DateTime::parse_from_rfc3339(result).map_err(serde::de::Error::custom)?;
         let format = dt
-            .with_timezone(&chrono::FixedOffset::east(8 * 3600))
+            .with_timezone(&FixedOffset::east(8 * 3600))
             .format(standard::TIME_FORMAT);
         Ok(DateTime::new(format.to_string()))
     }
@@ -33,6 +49,7 @@ impl<'a> Deserialize<'a> for DateTime {
 
 pub struct Drive {
     client: reqwest::Client,
+    credentials: conf::Credentials,
 }
 
 impl Drive {
@@ -43,7 +60,10 @@ impl Drive {
             .connect_timeout(REQUEST_CONNECT_TIMEOUT)
             .timeout(REQUEST_TIMEOUT)
             .build()?;
-        Ok(Self { client })
+        Ok(Self {
+            client,
+            credentials: Default::default(),
+        })
     }
 }
 

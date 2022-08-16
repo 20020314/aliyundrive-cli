@@ -15,7 +15,6 @@ pub struct GeneratorQrCodeResponse {
 }
 
 impl GeneratorQrCodeResponse {
-
     pub fn get_content(&self) -> Option<&GeneratorQrCodeContent> {
         self.content.as_ref()
     }

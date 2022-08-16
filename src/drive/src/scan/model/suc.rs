@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::conf::Authorization;
+use crate::conf::Credentials;
 use crate::scan::model::AuthorizationToken;
 use crate::scan::ClientType;
 use crate::DateTime;
@@ -65,20 +65,21 @@ impl AuthorizationToken for AppLoginResponse {
     }
 }
 
-impl TryInto<Authorization> for AppLoginResponse {
+impl TryInto<Credentials> for AppLoginResponse {
     type Error = anyhow::Error;
 
-    fn try_into(self) -> Result<Authorization, Self::Error> {
+    fn try_into(self) -> Result<Credentials, Self::Error> {
         let pds_login_result = self
             .pds_login_result
             .ok_or(anyhow!("failed to get pds login result"))?;
-        Ok(Authorization {
+        Ok(Credentials {
             user_id: pds_login_result.user_id,
             nick_name: pds_login_result.nick_name,
-            client_type: Some(ClientType::App),
+            client_type: ClientType::App,
             access_token: pds_login_result.access_token,
             refresh_token: pds_login_result.refresh_token,
-            expire_time: pds_login_result.expire_time,
+            expire_time: pds_login_result.expire_time.to_string(),
+            timestamp: pds_login_result.expire_time.to_timestamp(),
         })
     }
 }
@@ -112,9 +113,8 @@ pub struct PdsLoginResult {
     #[serde(rename = "expiresIn")]
     pub expires_in: i64,
 
-    #[serde(default)]
     #[serde(rename = "expireTime")]
-    pub expire_time: Option<DateTime>,
+    pub expire_time: DateTime,
 
     #[serde(default)]
     #[serde(rename = "tokenType")]
@@ -128,7 +128,7 @@ pub struct PdsLoginResult {
     pub status: Option<String>,
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Deserialize, Debug)]
 pub struct WebLoginResponse {
     #[serde(default)]
     pub default_sbox_drive_id: Option<String>,
@@ -136,8 +136,7 @@ pub struct WebLoginResponse {
     #[serde(default)]
     pub user_name: Option<String>,
 
-    #[serde(default)]
-    pub expire_time: Option<DateTime>,
+    pub expire_time: DateTime,
 
     #[serde(default)]
     pub avatar: Option<String>,
@@ -180,17 +179,18 @@ impl AuthorizationToken for WebLoginResponse {
     }
 }
 
-impl TryInto<Authorization> for WebLoginResponse {
+impl TryInto<Credentials> for WebLoginResponse {
     type Error = anyhow::Error;
 
-    fn try_into(self) -> Result<Authorization, Self::Error> {
-        Ok(Authorization {
+    fn try_into(self) -> Result<Credentials, Self::Error> {
+        Ok(Credentials {
             user_id: self.user_id,
             nick_name: self.nick_name,
-            client_type: Some(ClientType::Web),
+            client_type: ClientType::Web,
             access_token: self.access_token,
             refresh_token: self.refresh_token,
-            expire_time: self.expire_time,
+            expire_time: self.expire_time.to_string(),
+            timestamp: self.expire_time.to_timestamp(),
         })
     }
 }

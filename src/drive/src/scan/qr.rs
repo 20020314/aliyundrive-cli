@@ -20,15 +20,11 @@ const MOBILE_TOKEN_LOGIN_API: &str = "https://auth.aliyundrive.com/v2/oauth/toke
 const GET_WEB_TOKEN_API: &str = "https://api.aliyundrive.com/token/get";
 
 const SESSION_ID: &str = "SESSIONID";
-
 const GENERATOR_QRCODE_REFERER: &str = "https://passport.aliyundrive.com/mini_login.htm?lang=zh_cn&appName=aliyun_drive&appEntrance=web&styleType=auto&bizParams=&notLoadSsoView=false&notKeepLogin=false&isMobile=false&ad__pass__q__rememberLogin=true&ad__pass__q__rememberLoginDefaultValue=true&ad__pass__q__forgotPassword=true&ad__pass__q__licenseMargin=true&ad__pass__q__loginType=normal&hidePhoneCode=true&rnd=0.20099676922221987";
-
 const QUERY_REFERER: &str = "https://passport.aliyundrive.com/mini_login.htm?lang=zh_cn&appName=aliyun_drive&appEntrance=web&styleType=auto&bizParams=&notLoadSsoView=false&notKeepLogin=false&isMobile=false&ad__pass__q__rememberLogin=true&ad__pass__q__rememberLoginDefaultValue=true&ad__pass__q__forgotPassword=true&ad__pass__q__licenseMargin=true&ad__pass__q__loginType=normal&hidePhoneCode=true&rnd=0.17778824737759047";
 const QUERY_ORIGIN: &str = "https://passport.aliyundrive.com";
-
 const MOBILE_TOKEN_LOGIN_REFERER: &str = "https://auth.aliyundrive.com";
 const MOBILE_TOKEN_LOGIN_ORIGIN: &str = "https://auth.aliyundrive.com/v2/oauth/authorize?client_id=25dzX3vbYqktVxyX&redirect_uri=https%3A%2F%2Fwww.aliyundrive.com%2Fsign%2Fcallback&response_type=code&login_type=custom&state=%7B%22origin%22%3A%22https%3A%2F%2Fwww.aliyundrive.com%22%7D";
-
 const GET_WEB_TOKEN_REFERER: &str = "https://www.aliyundrive.com";
 const GET_WEB_TOKEN_ORIGIN: &str = "https://www.aliyundrive.com/";
 

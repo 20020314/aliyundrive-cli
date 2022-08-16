@@ -350,6 +350,7 @@ dependencies = [
  "anyhow",
  "base64",
  "chrono",
+ "dirs",
  "env_logger",
  "lazy_static",
  "log",
