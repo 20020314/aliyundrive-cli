@@ -84,7 +84,7 @@ impl Credentials {
         let end_time = DateTime::new(self.expire_time.clone());
         let end_timestamp = end_time.to_timestamp();
         let start_timestamp = chrono::prelude::Utc::now().timestamp();
-        (end_timestamp - start_timestamp - (8 * 3600)) < 0
+        (end_timestamp - start_timestamp < 0)
     }
 }
 
