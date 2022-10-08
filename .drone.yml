@@ -9,10 +9,10 @@ steps:
   commands:
   - apk update
   - apk add git musl-dev linux-headers libressl-dev git bash
-  - rustup target add x86_64-cil-linux-lin
+  - rustup target add x86_64-unknown-linux-musl
   - git clone https://github.com/20020314/aliyundrive-cli.git
   - cd aliyundrive-cli
-  - cargo run encode_string --target x86_64-cil-linux-lin
+  - cargo run encode_string --target x86_64-unknown-linux-musl
 - name: 上传
   image: plugins/s3
   settings:
