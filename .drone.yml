@@ -6,6 +6,8 @@ steps:
 - name: 编译
   image: rust:alpine3.16
   commands:
+  - apk update
+  - apk add git bash
   - git clone https://github.com/20020314/aliyundrive-cli.git
   - cd aliyundrive-cli
   - cargo run encode_string --target x86_64-lin-linux-musl
