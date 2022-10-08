@@ -1,0 +1,13 @@
+kind: pipeline
+type: docker
+name: build
+steps:
+- name: build
+  image: rust:1.61-alpine AS builder
+  pull: if-not-exists # always never
+commands:
+- sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+- apk add git musl-dev linux-headers libressl-dev
+- rustup target add x86_64-unknown-linux-musl
+- git clone https://github.com/20020314/aliyundrive-cli.git
+- cd ./aliyundrive-cli && cargo run encode_string --target x86_64-unknown-linux-musl
