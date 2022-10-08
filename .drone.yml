@@ -11,4 +11,13 @@ steps:
     - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
     - git clone https://github.com/gngpp/aliyundrive-cli.git
     - cd ./aliyundrive-cli && cargo run encode_string --target x86_64-lin-linux-musl
-​
+steps:
+- name: 上传
+  image: plugins/s3
+  settings:
+    endpoint: https://oss.elysia.li
+    bucket: lin-data
+    access_key: EFE37X4BY84SCMFQWUZG
+    secret_key: jm3aIfj3hq5oeAd6YTNnsVOEVQMf2B+J2rLUlGTS
+    source: public/**/*
+    target: /autobuild/
