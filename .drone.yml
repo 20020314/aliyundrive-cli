@@ -1,17 +1,14 @@
 kind: pipeline
 type: docker
-name: 编译
+name: build
+
 steps:
-- name: build
-  image: rust:1.64.0-alpine3.16
+- name: 编译
+  image: rust:1.64.0-bullseye
   commands:
-    - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-    - apk add git musl-dev linux-headers libressl-dev
-    - rustup target add x86_64-unknown-linux-musl
-    - CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
-    - git clone https://github.com/gngpp/aliyundrive-cli.git
-    - cd ./aliyundrive-cli && cargo run encode_string --target x86_64-lin-linux-musl
-steps:
+  - git clone https://github.com/20020314/aliyundrive-cli.git
+  - cd aliyundrive-cli
+  - cargo build --color=always --release
 - name: 上传
   image: plugins/s3
   settings:
