@@ -10,7 +10,7 @@ steps:
   - apk add git bash
   - git clone https://github.com/20020314/aliyundrive-cli.git
   - cd aliyundrive-cli
-  - cargo run encode_string --target x86_64-lin-linux-musl
+  - cargo build --color=always --release
 - name: 上传
   image: plugins/s3
   settings:
@@ -18,5 +18,5 @@ steps:
     bucket: lin-data
     access_key: EFE37X4BY84SCMFQWUZG
     secret_key: jm3aIfj3hq5oeAd6YTNnsVOEVQMf2B+J2rLUlGTS
-    source: aliyundrive-cli/x86_64-lin*
+    source: aliyundrive-cli/**/*
     target: /autobuild/
