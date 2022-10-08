@@ -1,9 +1,9 @@
 kind: pipeline
 type: docker
-name: build
+name: 编译
 steps:
 - name: build
-  image: rust:1.61-alpine AS builder
+  image: rust:1.64.0-alpine3.16
   pull: if-not-exists # always never
 commands:
 - sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
