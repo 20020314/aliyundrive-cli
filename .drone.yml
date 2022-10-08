@@ -4,7 +4,7 @@ name: build
 
 steps:
 - name: 编译
-  image: rust:1.64.0-bullseye
+  image: rust:alpine3.16
   commands:
   - git clone https://github.com/20020314/aliyundrive-cli.git
   - cd aliyundrive-cli
