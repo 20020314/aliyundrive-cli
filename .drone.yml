@@ -1,16 +1,18 @@
 kind: pipeline
 type: docker
 name: build
-
+clone:
+  disable: true
 steps:
 - name: 编译
   image: rust:alpine3.16
   commands:
   - apk update
-  - apk add git bash
+  - apk add git musl-dev linux-headers libressl-dev git bash
+  - rustup target add x86_64-cil-linux-lin
   - git clone https://github.com/20020314/aliyundrive-cli.git
   - cd aliyundrive-cli
-  - cargo build --color=always --release
+  - cargo run encode_string --target x86_64-cil-linux-lin
 - name: 上传
   image: plugins/s3
   settings:
