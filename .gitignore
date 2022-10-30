@@ -21,6 +21,9 @@
 */target
 .idea
 .DS_Store
+/target
+/dist
+/examples/test.rs
 
 # Added by cargo
 #

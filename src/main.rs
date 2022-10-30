@@ -1,8 +1,7 @@
 mod handler;
+mod drive;
 
-use anyhow::Context;
 use clap::{Parser, Subcommand};
-use drive::scan::model::AuthorizationToken;
 use std::io::Write;
 
 #[derive(Parser, Debug)]
@@ -33,6 +32,10 @@ enum Commands {
         /// Print configuration
         #[clap(long)]
         cat: bool,
+
+        /// Read token
+        #[clap(long)]
+        cat_token: bool,
     },
 }
 
@@ -40,15 +43,15 @@ enum Commands {
 enum QrCommand {
     /// Scan QRCode login to get a refresh token
     #[clap(arg_required_else_help = true)]
-    Scan {
+    Login {
         /// Mobile App QRCode scan code login
-        #[clap(long, short, group = "token")]
+        #[clap(long, group = "login")]
         app: bool,
         /// Web QRCode scan code login
-        #[clap(long, short, group = "token")]
+        #[clap(long, group = "login")]
         web: bool,
         /// Save the login token to a file
-        #[clap(long, short, requires = "token")]
+        #[clap(long, short, requires = "login")]
         sava: bool,
     },
     /// Generate QRCode content and query parameters

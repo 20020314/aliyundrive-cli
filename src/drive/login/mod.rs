@@ -1,8 +1,9 @@
 pub mod model;
 pub mod qr;
 
-use crate::conf::Credentials;
-use crate::{auth, scan, AuthorizationToken, Ok, QueryQrCodeCkForm};
+use crate::drive::conf::Credentials;
+use crate::drive::login::model::{auth, AuthorizationToken, Ok};
+use crate::drive::login::model::query::QueryQrCodeCkForm;
 use anyhow::{anyhow, Context};
 use serde::{de, Deserialize, Deserializer, Serialize};
 use std::fmt;
@@ -82,9 +83,9 @@ impl Default for ClientType {
     }
 }
 
-pub struct ScanHandler;
+pub struct QrCodeHandler;
 
-impl ScanHandler {
+impl QrCodeHandler {
     pub async fn qrcode_scan_handler(
         web_token: bool,
         app_token: bool,
@@ -97,8 +98,8 @@ impl ScanHandler {
             let qrcode_content = generator_response.get_qrcode_content();
             let ck_form = QueryQrCodeCkForm::from(generator_response);
             // print QRCode
-            qrcode::qr_print(&qrcode_content)?;
-            println!("Please scan the qrcode to login in 30 seconds");
+            qr2term::print_qr(&qrcode_content)?;
+            log::info!("Please scan the qrcode to login in 30 seconds");
             for _i in 0..10 {
                 tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
                 // Simulate rotation training to query QRCode status

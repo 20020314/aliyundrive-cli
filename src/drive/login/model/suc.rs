@@ -1,9 +1,9 @@
 #![allow(dead_code)]
 
-use crate::conf::Credentials;
-use crate::scan::model::AuthorizationToken;
-use crate::scan::ClientType;
-use crate::DateTime;
+use crate::drive::conf::Credentials;
+use crate::drive::login::model::AuthorizationToken;
+use crate::drive::login::ClientType;
+use crate::drive::time::DateTime;
 use anyhow::anyhow;
 use reqwest::Url;
 use serde::Deserialize;
@@ -34,7 +34,7 @@ impl GotoResponse {
             let key = k_v_array
                 .get(0)
                 .ok_or(anyhow!("goto query param key is None"))?;
-            if *key == crate::scan::model::CODE_KEY {
+            if *key == crate::drive::login::model::CODE_KEY {
                 let value = k_v_array
                     .get(1)
                     .ok_or(anyhow!("goto query param value is None"))?;
