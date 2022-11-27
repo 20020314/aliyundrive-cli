@@ -11,6 +11,7 @@ pub struct CLI {
     #[clap(short, long)]
     debug: bool,
 
+    /// Aliyundrive refresh_token
     #[clap(short, long)]
     refresh_token: Option<String>,
 
