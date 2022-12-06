@@ -39,7 +39,7 @@ fn init_conf(path: &str) -> PathBuf {
     conf_path
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Credentials {
     pub(crate) user_id: Option<String>,
     pub(crate) nick_name: Option<String>,
@@ -89,11 +89,11 @@ impl AuthorizationToken for Credentials {
     }
 }
 
-pub struct AppConf;
+pub struct Configuration;
 
-impl AppConf {
+impl Configuration {
     pub async fn print_std() -> anyhow::Result<()> {
-        let credentials = AppConf::read().await?;
+        let credentials = Configuration::read().await?;
         let credential_str = serde_json::to_string_pretty(&credentials)?;
         println!("{}\n", credential_str);
         if credentials.is_expired() {
@@ -103,7 +103,7 @@ impl AppConf {
     }
 
     pub async fn print_token() -> anyhow::Result<()> {
-        let credentials = AppConf::read().await?;
+        let credentials = Configuration::read().await?;
         let token_json = json!({
             "access_token": credentials.read_access_token().unwrap_or_default(),
             "refresh_token": credentials.read_refresh_token().unwrap_or_default(),

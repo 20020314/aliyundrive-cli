@@ -10,7 +10,7 @@ pub(crate) async fn subcommands_handler(subcommands: &Option<Commands>) -> anyho
                 println!("{}", serde_json::to_string_pretty(&credentials)?);
                 // Sava the authorization token to config file
                 if *sava {
-                    crate::drive::conf::AppConf::write(credentials).await?;
+                    crate::drive::conf::Configuration::write(credentials).await?;
                 }
             }
         }
@@ -21,15 +21,15 @@ pub(crate) async fn subcommands_handler(subcommands: &Option<Commands>) -> anyho
             let credentials =
                 crate::drive::login::QrCodeHandler::query_qrcode_app_login_result(t.clone(), ck.clone())
                     .await?;
-            crate::drive::conf::AppConf::write(credentials).await?;
+            crate::drive::conf::Configuration::write(credentials).await?;
         }
         Some(Commands::Config { cat, cat_token }) => {
             if *cat {
-                crate::drive::conf::AppConf::print_std().await?;
+                crate::drive::conf::Configuration::print_std().await?;
             }
 
             if *cat_token {
-                crate::drive::conf::AppConf::print_token().await?;
+                crate::drive::conf::Configuration::print_token().await?;
             }
         }
         Some(Commands::Daemon) => loop {

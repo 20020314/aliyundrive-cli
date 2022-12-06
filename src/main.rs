@@ -6,6 +6,7 @@ use std::io::Write;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, arg_required_else_help = true)]
+#[command(args_conflicts_with_subcommands = true)]
 pub struct CLI {
     /// Enable debug mode
     #[clap(short, long)]
