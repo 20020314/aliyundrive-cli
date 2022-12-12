@@ -14,14 +14,6 @@ pub struct GotoResponse {
     goto: Option<String>,
 }
 
-impl<'a> From<&'a String> for GotoResponse {
-    fn from(token: &String) -> Self {
-        Self {
-            goto: Some(token.to_string()),
-        }
-    }
-}
-
 impl GotoResponse {
     pub fn extract_authorization_code(&self) -> anyhow::Result<String> {
         let goto = self.goto.as_ref().ok_or(anyhow!("goto value is None"))?;
@@ -42,6 +34,14 @@ impl GotoResponse {
             }
         }
         anyhow::bail!("Failed to get authorization code")
+    }
+}
+
+impl From<&str> for GotoResponse {
+    fn from(token: &str) -> Self {
+        Self {
+            goto: Some(String::from(token)),
+        }
     }
 }
 
