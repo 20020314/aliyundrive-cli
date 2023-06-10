@@ -1,19 +1,12 @@
-use crate::scan::model::AuthorizationToken;
-use crate::scan::ClientType;
-use crate::DateTime;
-use anyhow::{anyhow, Context};
-use chrono::format::Fixed::TimezoneOffset;
-use chrono::FixedOffset;
+use crate::drive::login::model::AuthorizationToken;
+use crate::drive::login::ClientType;
+use crate::drive::time::DateTime;
+use anyhow::Context;
 use dirs;
 use lazy_static::lazy_static;
-use serde::de::Unexpected::Str;
-use serde::ser;
 use serde::{Deserialize, Serialize};
-use std::io::Read;
-use std::ops::Deref;
+use serde_json::json;
 use std::path::PathBuf;
-use std::time::SystemTime;
-use tokio::io::AsyncReadExt;
 
 lazy_static! {
     static ref APP_CONFIG_PATH: Option<&'static PathBuf> = {
@@ -21,15 +14,13 @@ lazy_static! {
         let x = Box::new(p);
         Some(Box::leak(x))
     };
-    static ref WEB_CONFIG_PATH: Option<&'static PathBuf> = {
-        let p = init_conf("web_credentials");
-        let x = Box::new(p);
-        Some(Box::leak(x))
-    };
 }
 
 fn init_conf(path: &str) -> PathBuf {
     let cache_dir = dirs::cache_dir().expect("Get directory error");
+    if !cache_dir.exists() {
+        std::fs::create_dir(&cache_dir).unwrap();
+    }
     let workspace_dir = cache_dir.join("aliyundrive-cli");
     if !workspace_dir.exists() {
         std::fs::create_dir(&workspace_dir).unwrap();
@@ -42,13 +33,13 @@ fn init_conf(path: &str) -> PathBuf {
     // app config file not exists
     let conf_path = workspace_dir.join(path);
     if !conf_path.exists() {
-        let res = std::fs::File::create(&conf_path).unwrap();
+        std::fs::File::create(&conf_path).unwrap();
         log::debug!("Initialize config file: {}", conf_path.display());
     }
     conf_path
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Credentials {
     pub(crate) user_id: Option<String>,
     pub(crate) nick_name: Option<String>,
@@ -84,7 +75,7 @@ impl Credentials {
         let end_time = DateTime::new(self.expire_time.clone());
         let end_timestamp = end_time.to_timestamp();
         let start_timestamp = chrono::prelude::Utc::now().timestamp();
-        (end_timestamp - start_timestamp < 0)
+        end_timestamp - start_timestamp < 0
     }
 }
 
@@ -98,15 +89,29 @@ impl AuthorizationToken for Credentials {
     }
 }
 
-pub struct AppConf;
+pub struct Configuration;
 
-impl AppConf {
+impl Configuration {
     pub async fn print_std() -> anyhow::Result<()> {
-        let p = APP_CONFIG_PATH.expect("Initialize aliyundrive directory error");
-        let str = tokio::fs::read_to_string(p)
-            .await
-            .context("Read configuration error!")?;
-        print!("{}", str);
+        let credentials = Configuration::read().await?;
+        let credential_str = serde_json::to_string_pretty(&credentials)?;
+        println!("{}\n", credential_str);
+        if credentials.is_expired() {
+            log::warn!("The token certificate has expired. Please login again.")
+        }
+        Ok(())
+    }
+
+    pub async fn print_token() -> anyhow::Result<()> {
+        let credentials = Configuration::read().await?;
+        let token_json = json!({
+            "access_token": credentials.read_access_token().unwrap_or_default(),
+            "refresh_token": credentials.read_refresh_token().unwrap_or_default(),
+        });
+        println!("{}\n", serde_json::to_string_pretty(&token_json)?);
+        if credentials.is_expired() {
+            log::warn!("The token certificate has expired. Please login again.")
+        }
         Ok(())
     }
 

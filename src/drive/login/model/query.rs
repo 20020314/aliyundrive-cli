@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use crate::scan::model::gen::GeneratorQrCodeResponse;
-use crate::scan::model::{suc, CkForm, Ok};
-use crate::scan::State;
+use crate::drive::login::model::gen::GeneratorQrCodeResponse;
+use crate::drive::login::model::{suc, CkForm, Ok};
+use crate::drive::login::State;
 use serde::{Deserialize, Serialize};
 
 // query qrcode scan status
@@ -190,8 +190,8 @@ impl From<GeneratorQrCodeResponse> for QueryQrCodeCkForm {
 impl CkForm for QueryQrCodeCkForm {
     fn map_form(&self) -> std::collections::HashMap<String, String> {
         let mut ck_map = std::collections::HashMap::<String, String>::new();
-        ck_map.insert(crate::scan::model::T_KEY.to_string(), self.t.to_string());
-        ck_map.insert(crate::scan::model::CK_KEY.to_string(), self.ck.to_string());
+        ck_map.insert(crate::drive::login::model::T_KEY.to_string(), self.t.to_string());
+        ck_map.insert(crate::drive::login::model::CK_KEY.to_string(), self.ck.to_string());
         ck_map
     }
 }

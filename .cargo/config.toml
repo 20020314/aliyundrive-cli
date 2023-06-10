@@ -1,22 +1,5 @@
-#[source.crates-io]
-#replace-with = 'rsproxy'
-#
-#[source.rsproxy]
-#registry = "https://rsproxy.cn/crates.io-index"
-#
-#[registries.rsproxy]
-#index = "https://rsproxy.cn/crates.io-index"
-#
-#[net]
-#git-fetch-with-cli = true
+[target.mips64-unknown-linux-muslabi64]
+rustflags = ["-C", "link-arg=-lgcc"]
 
-# rm -rf ~/.cargo/.package-cache
-
- [source.crates-io]
- registry = "https://github.com/rust-lang/crates.io-index"
- # 指定镜像
- replace-with = 'tuna'
-
- # 清华大学
- [source.tuna]
- registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
+[target.mips64el-unknown-linux-muslabi64]
+rustflags = ["-C", "link-arg=-lgcc"]

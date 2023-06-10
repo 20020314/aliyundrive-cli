@@ -1,6 +1,3 @@
-#![allow(dead_code)]
-use std::fmt::Debug;
-
 pub mod auth;
 pub mod gen;
 pub mod query;
@@ -11,7 +8,7 @@ pub const LOGIN_TYPE: &str = "normal";
 pub const CK_KEY: &str = "ck";
 pub const T_KEY: &str = "t";
 
-pub trait CkForm: Debug {
+pub trait CkForm: std::fmt::Debug {
     fn map_form(&self) -> std::collections::HashMap<String, String>;
 }
 

@@ -8,21 +8,17 @@ author = "<gngpp verticle@foxmail.com>"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0"
-log = "0.4.0"
-env_logger = "0.8.4"
-clap = { version = "3.2.8", features = ["derive"] }
-serde = { version = "1.0.136", features = ["derive"] }
-serde_json = "1.0.79"
-chrono = "0.4.9"
-tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread"] }
-reqwest = { version = "0.11.10", default-features = false, features = ["json", "cookies", "gzip", "rustls-tls"] }
+anyhow = "1.0.66"
+log = "0.4.17"
+env_logger = "0.10.0"
+clap = { version = "4.0.18", features = ["derive"] }
+serde = { version = "1.0.147", features = ["derive"] }
+serde_json = "1.0.87"
+chrono = "0.4.22"
+tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread", "sync", "fs"] }
+reqwest = { version = "0.11.12", default-features = false, features = ["json", "cookies", "gzip", "rustls-tls"] }
 dirs = "4.0"
-qrcode = { path = "src/qrcode" }
-drive = { path = "src/drive" }
-
-[workspace]
-members = [
-    "src/qrcode",
-    "src/drive",
-]
+base64 = "0.13.1"
+lazy_static = "1.4.0"
+serde_yaml = "0.9.14"
+qr2term = "0.3.1"

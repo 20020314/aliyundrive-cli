@@ -1,31 +1,35 @@
 use crate::{Commands, QrCommand};
-use anyhow::Context;
-use drive::conf::AppConf;
-use drive::scan::model::{auth, AuthorizationToken, Ok};
 
 pub(crate) async fn subcommands_handler(subcommands: &Option<Commands>) -> anyhow::Result<()> {
     match &subcommands {
-        Some(Commands::QR(QrCommand::Scan { app, web, sava })) => {
+        Some(Commands::QR(QrCommand::Login { app, web, sava })) => {
             // qrcode scan
             if *web || *app {
-                let credentials = drive::scan::ScanHandler::qrcode_scan_handler(*web, *app).await?;
+                let credentials =
+                    crate::drive::login::QrCodeHandler::qrcode_scan_handler(*web, *app).await?;
                 println!("{}", serde_json::to_string_pretty(&credentials)?);
                 // Sava the authorization token to config file
                 if *sava {
-                    AppConf::write(credentials).await?;
+                    crate::drive::conf::Configuration::write(credentials).await?;
                 }
             }
         }
         Some(Commands::QR(QrCommand::Generate)) => {
-            drive::scan::ScanHandler::print_qrcode_content_std().await?;
+            crate::drive::login::QrCodeHandler::print_qrcode_content_std().await?;
         }
         Some(Commands::QR(QrCommand::Query { t, ck })) => {
-            let credentials = drive::scan::ScanHandler::query_qrcode_app_login_result(t.clone(), ck.clone()).await?;
-            AppConf::write(credentials).await?;
+            let credentials =
+                crate::drive::login::QrCodeHandler::query_qrcode_app_login_result(t.clone(), ck.clone())
+                    .await?;
+            crate::drive::conf::Configuration::write(credentials).await?;
         }
-        Some(Commands::Config { cat }) => {
+        Some(Commands::Config { cat, cat_token }) => {
             if *cat {
-                AppConf::print_std().await?;
+                crate::drive::conf::Configuration::print_std().await?;
+            }
+
+            if *cat_token {
+                crate::drive::conf::Configuration::print_token().await?;
             }
         }
         Some(Commands::Daemon) => loop {
